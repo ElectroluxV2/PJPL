@@ -1,5 +1,7 @@
 package pl.edu.pjwstk.pjpl.scrapper;
 
+import pl.edu.pjwstk.pjpl.scrapper.datepicker.DatePicker;
+import pl.edu.pjwstk.pjpl.scrapper.datepicker.OpenedDatePicker;
 import pl.edu.pjwstk.pjpl.scrapper.group.GroupSelector;
 import pl.edu.pjwstk.pjpl.scrapper.semester.OpenedSemesterSelector;
 import pl.edu.pjwstk.pjpl.scrapper.semester.SemesterSelector;
@@ -26,5 +28,9 @@ public class GroupSchedulePage {
 
     public GroupSelector getGroupSelector() {
         return new GroupSelector();
+    }
+
+    public OpenedDatePicker openDatePicker() {
+        return DatePicker.open();
     }
 }

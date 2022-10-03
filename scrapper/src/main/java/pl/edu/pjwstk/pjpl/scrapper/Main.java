@@ -1,5 +1,6 @@
 package pl.edu.pjwstk.pjpl.scrapper;
 
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -10,7 +11,7 @@ import java.time.Duration;
 public class Main {
     public static final WebDriver driver = new ChromeDriver();
     public static final WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(2000));
-    public static void main(final String[] args) {
+    public static void main(final String[] args) throws InterruptedException {
         System.out.println("Welcome to PJPL Scrapper!");
 
         final var groupSchedulePage = GroupSchedulePage
@@ -52,16 +53,15 @@ public class Main {
                         .orElseThrow()
                 );
 
-        DatePicker
-            .open()
+        groupSchedulePage
+            .openDatePicker()
             .openMonthView()
-            .selectMonth(2)
-            .selectYear(2020)
+            .selectMonth(10)
+            .selectYear(2022)
             .apply()
             .chooseFirstAvailableDay()
             .printCurrentDate();
 
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(25));
-        driver.quit();
+        ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
     }
 }
