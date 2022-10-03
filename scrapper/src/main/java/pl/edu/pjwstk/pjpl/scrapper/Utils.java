@@ -1,18 +1,19 @@
 package pl.edu.pjwstk.pjpl.scrapper;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
 
+import static pl.edu.pjwstk.pjpl.scrapper.Main.driver;
+import static pl.edu.pjwstk.pjpl.scrapper.Main.wait;
+
 public class Utils {
-    public static List<String> listComboBoxItems(final WebDriver driver, final WebDriverWait wait, final String partialId) {
+    public static List<String> listComboBoxItems(final String partialId) {
         final var comboBoxBy = By.id("%s_Input".formatted(partialId));
         final var comboBoxDropDownBy = By.id("%s_DropDown".formatted(partialId));
-        openComboBox(driver, wait, comboBoxBy, comboBoxDropDownBy);
+        openComboBox(comboBoxBy, comboBoxDropDownBy);
 
         var dropDownElement = driver.findElement(comboBoxDropDownBy);
         var availableItems = dropDownElement.findElements(By.tagName("li"));
@@ -26,12 +27,12 @@ public class Utils {
     /**
      * @Notice: This method does not wait for click result
      */
-    public static void selectComboBoxItem(final WebDriver driver, final WebDriverWait wait, final String partialId, final String itemText) {
+    public static void selectComboBoxItem(final String partialId, final String itemText) {
         final var comboBoxBy = By.id("%s_Input".formatted(partialId));
         final var comboBoxDropDownBy = By.id("%s_DropDown".formatted(partialId));
 
         System.out.printf("Selecting `%s` ComboBox item.%n", itemText);
-        openComboBox(driver, wait, comboBoxBy, comboBoxDropDownBy);
+        openComboBox(comboBoxBy, comboBoxDropDownBy);
 
         final var comboBoxDropDownElement = driver.findElement(comboBoxDropDownBy);
         final var items = comboBoxDropDownElement.findElements(By.tagName("li"));
@@ -44,7 +45,7 @@ public class Utils {
         wait.until(ExpectedConditions.invisibilityOf(comboBoxDropDownElement)); // Close animation
     }
 
-    public static void openComboBox(final WebDriver driver, final WebDriverWait wait, final By comboBoxBy, final By comboBoxDropDownBy) {
+    public static void openComboBox(final By comboBoxBy, final By comboBoxDropDownBy) {
         final var comboBoxItemsBy = By.tagName("li");
         final var comboBoxElement = driver.findElement(comboBoxBy);
 
