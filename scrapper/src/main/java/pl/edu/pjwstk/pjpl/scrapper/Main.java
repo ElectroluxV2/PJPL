@@ -31,7 +31,10 @@ public class Main {
             selectComboBoxItem(driver, wait, Constants.SEMESTER_COMBO_BOX_PARTIAL_ID, semesterName);
 
             System.out.printf("Getting list of available studies for semester `%s`.%n", semesterName);
-            var studiesToScrap = listComboBoxItems(driver, wait, Constants.STUDY_COMBO_BOX_PARTIAL_ID);
+            var studiesToScrap = listComboBoxItems(driver, wait, Constants.STUDY_COMBO_BOX_PARTIAL_ID)
+                    .stream()
+                    .filter(study -> study.contains("Gdańsk"))
+                    .toList();
 
             for (int studyIndex = 0; studyIndex < studiesToScrap.size(); studyIndex++) {
                 final var studyName = studiesToScrap.get(studyIndex);
@@ -66,7 +69,7 @@ public class Main {
                     final var todayButtonBy = By.className("rsToday");
                     final var currentDateBy = By.cssSelector(".rsHeader > h2");
 
-                    wait.until(ExpectedConditions.stalenessOf(showPlanButton));
+                    wait.withTimeout(Duration.ofMinutes(1)).until(ExpectedConditions.stalenessOf(showPlanButton));
 
                     final var previousDayButton = driver.findElement(previousDayButtonBy);
                     final var nextDayButton = driver.findElement(nextDayButtonBy);
