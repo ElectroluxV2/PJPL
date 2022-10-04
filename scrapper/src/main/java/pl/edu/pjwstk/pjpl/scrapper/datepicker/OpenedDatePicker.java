@@ -23,15 +23,16 @@ public class OpenedDatePicker {
 
     public CalendarView chooseFirstAvailableDay() {
         driver
-            .findElement(dayTableBy)
-            .findElements(By.tagName("td"))
-            .stream()
-            .filter(td -> !td.getText().trim().isEmpty())
-            .findFirst()
-            .orElseThrow()
-            .click();
+                .findElement(dayTableBy)
+                .findElements(By.tagName("td"))
+                .stream()
+                .filter(td -> !td.getText().trim().isEmpty())
+                .findFirst()
+                .orElseThrow()
+                .click();
 
-        wait.until(ExpectedConditions.invisibilityOf(driver.findElement(DatePicker.datepickerBy)));
+        wait
+                .until(ExpectedConditions.invisibilityOf(driver.findElement(DatePicker.datepickerBy)));
 
         return new CalendarView();
     }

@@ -13,6 +13,18 @@ public class Main {
     public static void main(final String[] args) throws InterruptedException {
         System.out.println("Welcome to PJPL Scrapper!");
 
+        try {
+            logic();
+
+            Thread.sleep(Duration.ofSeconds(10));
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            driver.quit();
+        }
+    }
+
+    public static void logic() {
         final var groupSchedulePage = GroupSchedulePage
                 .open();
 
@@ -52,19 +64,38 @@ public class Main {
                         .orElseThrow()
                 );
 
-        groupSchedulePage
-            .openDatePicker()
-            .openMonthView()
-            .selectMonth(10)
-            .selectYear(2022)
-            .apply()
-            .chooseFirstAvailableDay()
-            .printCurrentDate();
+        final var calendarView = groupSchedulePage
+                .openDatePicker()
+                .openMonthView()
+                .selectMonth(10)
+                .selectYear(2022)
+                .apply()
+                .chooseFirstAvailableDay();
+
+        System.out.printf("Scrapping date: %s.%n", calendarView.getCurrentDate());
 
         ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
 
-        Thread.sleep(Duration.ofMinutes(2));
+        final var availableSubjects = calendarView
+                .getAvailableSubjects();
 
-        driver.quit();
+        final var subjectPopout = calendarView
+                .openSubjectPopout(availableSubjects.get(0));
+
+        final var studentsCount = subjectPopout
+                .getStudentCount();
+
+        System.out.println(studentsCount.getTotal());
+        System.out.println(studentsCount.getItn());
+        System.out.println(subjectPopout.getSubjectCode());
+        System.out.println(subjectPopout.getSubjectType());
+        System.out.println(subjectPopout.getGroups());
+        System.out.println(subjectPopout.getLectures());
+        System.out.println(subjectPopout.getLocation());
+        System.out.println(subjectPopout.getRoom());
+        System.out.println(subjectPopout.getFrom());
+        System.out.println(subjectPopout.getTo());
+        System.out.println(subjectPopout.getDuration());
+        System.out.println(subjectPopout.getTeamsCode());
     }
 }
