@@ -110,6 +110,10 @@ public class SubjectPopout {
         return List.of(combined.split(","));
     }
 
+    public void close() {
+        driver.findElement(By.id("header")).click();
+    }
+
     public static class StudentCount {
         private final int total;
         private final int itn;

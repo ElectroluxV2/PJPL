@@ -7,6 +7,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
+import static pl.edu.pjwstk.pjpl.scrapper.calendarview.CalendarView.subjectPopoutBy;
+
 public class Main {
     public static final WebDriver driver = new ChromeDriver();
     public static final WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(2000));
@@ -22,6 +24,8 @@ public class Main {
         } finally {
             driver.quit();
         }
+
+        System.out.println("PJPL Scrapper is done with that.");
     }
 
     public static void logic() {
@@ -72,30 +76,42 @@ public class Main {
                 .apply()
                 .chooseFirstAvailableDay();
 
-        System.out.printf("Scrapping date: %s.%n", calendarView.getCurrentDate());
-
         ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
 
-        final var availableSubjects = calendarView
-                .getAvailableSubjects();
+        for (int i = 0; i < 20; i++) {
+            System.out.printf("Scrapping date: %s.%n", calendarView.getCurrentDate());
 
-        final var subjectPopout = calendarView
-                .openSubjectPopout(availableSubjects.get(0));
+            final var availableSubjects = calendarView
+                    .getAvailableSubjects();
 
-        final var studentsCount = subjectPopout
-                .getStudentCount();
+            for (final var availableSubject : availableSubjects) {
+                final var subjectPopout = calendarView
+                        .openSubjectPopout(availableSubject);
 
-        System.out.println(studentsCount.getTotal());
-        System.out.println(studentsCount.getItn());
-        System.out.println(subjectPopout.getSubjectCode());
-        System.out.println(subjectPopout.getSubjectType());
-        System.out.println(subjectPopout.getGroups());
-        System.out.println(subjectPopout.getLectures());
-        System.out.println(subjectPopout.getLocation());
-        System.out.println(subjectPopout.getRoom());
-        System.out.println(subjectPopout.getFrom());
-        System.out.println(subjectPopout.getTo());
-        System.out.println(subjectPopout.getDuration());
-        System.out.println(subjectPopout.getTeamsCode());
+                System.out.println("-----------");
+                System.out.println(driver.findElement(subjectPopoutBy).getText());
+                System.out.println("-----------");
+
+//                final var studentsCount = subjectPopout
+//                        .getStudentCount();
+
+//                System.out.println(studentsCount.getTotal());
+//                System.out.println(studentsCount.getItn());
+//                System.out.println(subjectPopout.getSubjectCode());
+//                System.out.println(subjectPopout.getSubjectType());
+//                System.out.println(subjectPopout.getGroups());
+//                System.out.println(subjectPopout.getLectures());
+//                System.out.println(subjectPopout.getLocation());
+//                System.out.println(subjectPopout.getRoom());
+//                System.out.println(subjectPopout.getFrom());
+//                System.out.println(subjectPopout.getTo());
+//                System.out.println(subjectPopout.getDuration());
+//                System.out.println(subjectPopout.getTeamsCode());
+
+                subjectPopout.close();
+            }
+
+            calendarView.goToNextWeek();
+        }
     }
 }
