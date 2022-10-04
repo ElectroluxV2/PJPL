@@ -16,4 +16,9 @@ public class CalendarView {
 
         System.out.println(currentDate);
     }
+
+    public CalendarView goToNetWeek() {
+
+        return this;
+    }
 }

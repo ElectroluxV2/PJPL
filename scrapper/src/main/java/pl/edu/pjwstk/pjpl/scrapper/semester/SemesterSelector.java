@@ -2,7 +2,6 @@ package pl.edu.pjwstk.pjpl.scrapper.semester;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import pl.edu.pjwstk.pjpl.scrapper.study.OpenedStudySelector;
 
 import static pl.edu.pjwstk.pjpl.scrapper.Main.driver;
 import static pl.edu.pjwstk.pjpl.scrapper.Main.wait;
@@ -13,8 +12,8 @@ public class SemesterSelector {
 
     public static OpenedSemesterSelector open() {
         driver
-            .findElement(semesterInputBy)
-            .click();
+                .findElement(semesterInputBy)
+                .click();
 
         wait.until(ExpectedConditions.presenceOfElementLocated(semesterDropDownBy));
         wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(semesterDropDownBy, By.tagName("li"))); // Wait until options load

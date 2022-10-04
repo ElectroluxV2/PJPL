@@ -14,7 +14,7 @@ public class MonthView {
     private static final By okBy = By.id("rcMView_OK");
 
     public MonthView selectMonth(int month) {
-        final var shotMonthName = Month.of(month).getDisplayName(TextStyle.FULL, new Locale("pl")).substring(0, 3);
+        final var shotMonthName = Month.of(month).getDisplayName(TextStyle.FULL, Locale.forLanguageTag("pl")).substring(0, 3);
         selectOption(shotMonthName);
         return this;
     }

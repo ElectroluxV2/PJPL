@@ -4,7 +4,6 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import pl.edu.pjwstk.pjpl.scrapper.datepicker.DatePicker;
 
 import java.time.Duration;
 
@@ -63,5 +62,9 @@ public class Main {
             .printCurrentDate();
 
         ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
+
+        Thread.sleep(Duration.ofMinutes(2));
+
+        driver.quit();
     }
 }
