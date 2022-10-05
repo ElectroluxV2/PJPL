@@ -18,6 +18,12 @@ public class GroupSchedulePage {
         return new GroupSchedulePage();
     }
 
+    public GroupSchedulePage refresh() {
+        driver.get(Constants.MAIN_URL);
+
+        return this;
+    }
+
     public OpenedSemesterSelector openSemesterSelector() {
         return SemesterSelector.open();
     }

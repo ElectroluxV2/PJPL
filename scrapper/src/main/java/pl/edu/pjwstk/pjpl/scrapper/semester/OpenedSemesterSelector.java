@@ -23,14 +23,39 @@ public class OpenedSemesterSelector {
                 .toList();
     }
 
+    private void close() {
+        this.closed = true;
+        driver.findElement(By.id("header")).click();
+
+        final var dropdown = driver
+                .findElement(SemesterSelector.semesterDropDownBy);
+
+        // Wait for animation
+        wait.until(ExpectedConditions.invisibilityOf(dropdown));
+    }
+
     public void chooseSemester(String semesterToChoose) {
+        if (closed) throw new RuntimeException("Semester selector is already closed!");
+
         final var currentValue = driver
                 .findElement(valueInputBy)
                 .getAttribute("value")
                 .trim();
 
+        if (semesterToChoose.equalsIgnoreCase(currentValue)) {
+            this.close();
+            return;
+        }
+
         final var dropdown = driver
                 .findElement(SemesterSelector.semesterDropDownBy);
+
+        System.out.println(semesterToChoose);
+        System.out.println(dropdown
+                .findElements(By.tagName("li"))
+                .stream()
+                .map(e -> e.getText().trim())
+                .toList());
 
         dropdown
                 .findElements(By.tagName("li"))
@@ -40,11 +65,9 @@ public class OpenedSemesterSelector {
                 .orElseThrow()
                 .click();
 
-        if (!currentValue.equalsIgnoreCase(semesterToChoose)) {
-            // Wait for other options load
-            wait.until(ExpectedConditions.stalenessOf(dropdown));
-        }
+        // Wait for other options load
+        wait.until(ExpectedConditions.stalenessOf(dropdown));
 
-        this.closed = true;
+        this.close();
     }
 }
