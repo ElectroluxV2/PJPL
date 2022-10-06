@@ -22,6 +22,8 @@ public class GroupSelector {
     }
 
     public void chooseGroup(final String groupToChoose) {
+        this.listAvailableGroups(); // FIXME: Why is this necessary?
+
         driver
                 .findElement(groupsListBoxBy)
                 .findElements(By.tagName("li"))

@@ -1,9 +1,9 @@
 package pl.edu.pjwstk.pjpl.scrapper.study;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.time.Duration;
 import java.util.List;
 
 import static pl.edu.pjwstk.pjpl.scrapper.Main.driver;
@@ -51,15 +51,20 @@ public class OpenedStudySelector {
         final var dropdown = driver
                 .findElement(StudySelector.studyDropDownBy);
 
+        this.listAvailableStudies(); // FIXME: Why is this necessary?
+
         dropdown
                 .findElements(By.tagName("li"))
                 .stream()
                 .filter(li -> li.getText().trim().equalsIgnoreCase(studyToChoose))
                 .findFirst()
-                .ifPresentOrElse(WebElement::click, () -> System.err.printf("Missing study: %s.%n", studyToChoose));
+                .orElseThrow()
+                .click();
 
         // Wait for other options load
-        wait.until(ExpectedConditions.stalenessOf(dropdown));
+        wait
+                .withTimeout(Duration.ofSeconds(90))
+                .until(ExpectedConditions.stalenessOf(dropdown));
 
         this.close();
     }

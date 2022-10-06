@@ -8,8 +8,7 @@ import java.util.List;
 
 import static pl.edu.pjwstk.pjpl.scrapper.Main.driver;
 import static pl.edu.pjwstk.pjpl.scrapper.Main.wait;
-import static pl.edu.pjwstk.pjpl.scrapper.calendarview.SubjectPopout.studentsCountBy;
-import static pl.edu.pjwstk.pjpl.scrapper.calendarview.SubjectPopout.subjectCodeBy;
+import static pl.edu.pjwstk.pjpl.scrapper.calendarview.SubjectPopout.dateBy;
 
 public class CalendarView {
     private static final By nextWeekButtonBy = By.className("rsNextDay");
@@ -60,12 +59,12 @@ public class CalendarView {
         subject.click();
 
         wait
-                .withTimeout(Duration.ofSeconds(30)) // Sometimes this site lags as hell
-                .until(ExpectedConditions.presenceOfNestedElementLocatedBy(subjectPopoutBy, studentsCountBy));
+                .withTimeout(Duration.ofSeconds(90)) // Sometimes this site lags as hell
+                .until(ExpectedConditions.presenceOfNestedElementLocatedBy(subjectPopoutBy, dateBy));
 
         wait
-                .withTimeout(Duration.ofSeconds(30)) // Sometimes this site lags as hell
-                .until(ExpectedConditions.textToBePresentInElementLocated(subjectCodeBy, subjectCode));
+                .withTimeout(Duration.ofSeconds(90)) // Sometimes this site lags as hell
+                .until(ExpectedConditions.textToBePresentInElementLocated(subjectPopoutBy, subjectCode));
 
         return new SubjectPopout();
     }

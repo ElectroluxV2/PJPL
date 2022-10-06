@@ -3,6 +3,7 @@ package pl.edu.pjwstk.pjpl.scrapper.semester;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import java.time.Duration;
 import java.util.List;
 
 import static pl.edu.pjwstk.pjpl.scrapper.Main.driver;
@@ -50,12 +51,7 @@ public class OpenedSemesterSelector {
         final var dropdown = driver
                 .findElement(SemesterSelector.semesterDropDownBy);
 
-        System.out.println(semesterToChoose);
-        System.out.println(dropdown
-                .findElements(By.tagName("li"))
-                .stream()
-                .map(e -> e.getText().trim())
-                .toList());
+        this.listAvailableSemesters(); // FIXME: Why is this necessary?
 
         dropdown
                 .findElements(By.tagName("li"))
@@ -66,7 +62,9 @@ public class OpenedSemesterSelector {
                 .click();
 
         // Wait for other options load
-        wait.until(ExpectedConditions.stalenessOf(dropdown));
+        wait
+                .withTimeout(Duration.ofSeconds(90))
+                .until(ExpectedConditions.stalenessOf(dropdown));
 
         this.close();
     }
