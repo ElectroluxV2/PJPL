@@ -1,23 +1,29 @@
-package pl.edu.pjwstk.pjpl.scrapper.semester;
+package pl.edu.pjwstk.pjpl.scrapper.components.study;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
 
-import static pl.edu.pjwstk.pjpl.scrapper.Main.driver;
-import static pl.edu.pjwstk.pjpl.scrapper.Main.wait;
-
-public class OpenedSemesterSelector {
-    private static final By valueInputBy = By.name("ctl00$ContentPlaceHolder1$SemestrComboBox");
+public class OpenedStudySelector {
+    private static final By valueInputBy = By.name("ctl00$ContentPlaceHolder1$StudiaComboBox");
+    private final WebDriver driver;
+    private final WebDriverWait wait;
     private boolean closed = false;
 
-    public List<String> listAvailableSemesters() throws RuntimeException {
-        if (closed) throw new RuntimeException("Semester selector is already closed!");
+    public OpenedStudySelector(final WebDriver driver, final WebDriverWait wait) {
+        this.driver = driver;
+        this.wait = wait;
+    }
+
+    public List<String> listAvailableStudies() throws RuntimeException {
+        if (closed) throw new RuntimeException("Study selector is already closed!");
 
         return driver
-                .findElement(SemesterSelector.semesterDropDownBy)
+                .findElement(StudySelector.studyDropDownBy)
                 .findElements(By.tagName("li"))
                 .stream()
                 .map(li -> li.getText().trim())
@@ -29,34 +35,34 @@ public class OpenedSemesterSelector {
         driver.findElement(By.id("header")).click();
 
         final var dropdown = driver
-                .findElement(SemesterSelector.semesterDropDownBy);
+                .findElement(StudySelector.studyDropDownBy);
 
         // Wait for animation
         wait.until(ExpectedConditions.invisibilityOf(dropdown));
     }
 
-    public void chooseSemester(String semesterToChoose) {
-        if (closed) throw new RuntimeException("Semester selector is already closed!");
+    public void chooseStudy(String studyToChoose) {
+        if (closed) throw new RuntimeException("Study selector is already closed!");
 
         final var currentValue = driver
                 .findElement(valueInputBy)
                 .getAttribute("value")
                 .trim();
 
-        if (semesterToChoose.equalsIgnoreCase(currentValue)) {
+        if (currentValue.equalsIgnoreCase(studyToChoose)) {
             this.close();
             return;
         }
 
         final var dropdown = driver
-                .findElement(SemesterSelector.semesterDropDownBy);
+                .findElement(StudySelector.studyDropDownBy);
 
-        this.listAvailableSemesters(); // FIXME: Why is this necessary?
+        this.listAvailableStudies(); // FIXME: Why is this necessary?
 
         dropdown
                 .findElements(By.tagName("li"))
                 .stream()
-                .filter(li -> li.getText().trim().equalsIgnoreCase(semesterToChoose))
+                .filter(li -> li.getText().trim().equalsIgnoreCase(studyToChoose))
                 .findFirst()
                 .orElseThrow()
                 .click();

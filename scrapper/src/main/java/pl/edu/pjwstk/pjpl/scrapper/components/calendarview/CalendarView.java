@@ -1,22 +1,27 @@
-package pl.edu.pjwstk.pjpl.scrapper.calendarview;
+package pl.edu.pjwstk.pjpl.scrapper.components.calendarview;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.List;
 
-import static pl.edu.pjwstk.pjpl.scrapper.Main.driver;
-import static pl.edu.pjwstk.pjpl.scrapper.Main.wait;
-import static pl.edu.pjwstk.pjpl.scrapper.calendarview.SubjectPopout.dateBy;
+import static pl.edu.pjwstk.pjpl.scrapper.components.calendarview.SubjectPopout.dateBy;
 
 public class CalendarView {
     private static final By nextWeekButtonBy = By.className("rsNextDay");
     private static final By currentDateBy = By.cssSelector(".rsHeader > h2");
-
     private static final By subjectsBy = By.cssSelector("div[id*=ctl00_ContentPlaceHolder1_PlanZajecRadScheduler].rsAptSubject");
-
     public static final By subjectPopoutBy = By.id("ctl00_ContentPlaceHolder1_RadToolTipManager1RTMPanel");
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+
+    public CalendarView(final WebDriver driver, final WebDriverWait wait) {
+        this.driver = driver;
+        this.wait = wait;
+    }
 
     public String getCurrentDate() {
         return driver.
@@ -66,6 +71,6 @@ public class CalendarView {
                 .withTimeout(Duration.ofSeconds(90)) // Sometimes this site lags as hell
                 .until(ExpectedConditions.textToBePresentInElementLocated(subjectPopoutBy, subjectCode));
 
-        return new SubjectPopout();
+        return new SubjectPopout(driver, wait);
     }
 }

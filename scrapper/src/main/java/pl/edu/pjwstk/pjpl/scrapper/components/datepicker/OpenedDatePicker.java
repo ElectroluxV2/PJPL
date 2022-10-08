@@ -1,27 +1,31 @@
-package pl.edu.pjwstk.pjpl.scrapper.datepicker;
+package pl.edu.pjwstk.pjpl.scrapper.components.datepicker;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import pl.edu.pjwstk.pjpl.scrapper.calendarview.CalendarView;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import pl.edu.pjwstk.pjpl.scrapper.components.calendarview.CalendarView;
 
 import java.time.Duration;
 
-import static pl.edu.pjwstk.pjpl.scrapper.Main.driver;
-import static pl.edu.pjwstk.pjpl.scrapper.Main.wait;
-
 public class OpenedDatePicker {
     private static final By titleBy = By.id("ctl00_ContentPlaceHolder1_PlanZajecRadScheduler_SelectedDateCalendar_Title");
-
     private static final By monthViewBy = By.id("ctl00_ContentPlaceHolder1_PlanZajecRadScheduler_SelectedDateCalendar_FastNavPopup");
-
     private static final By dayTableBy = By.id("ctl00_ContentPlaceHolder1_PlanZajecRadScheduler_SelectedDateCalendar_Top");
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+
+    public OpenedDatePicker(final WebDriver driver, final WebDriverWait wait) {
+        this.driver = driver;
+        this.wait = wait;
+    }
     public MonthView openMonthView() {
         wait.until(ExpectedConditions.elementToBeClickable(titleBy));
         driver.findElement(titleBy).click();
         wait.until(ExpectedConditions.presenceOfElementLocated(monthViewBy));
         wait.until(ExpectedConditions.visibilityOf(driver.findElement(monthViewBy)));
 
-        return new MonthView();
+        return new MonthView(driver, wait);
     }
 
     public CalendarView chooseFirstAvailableDay() {
@@ -38,6 +42,6 @@ public class OpenedDatePicker {
                 .withTimeout(Duration.ofSeconds(90)) // Sometimes this site lags as hell
                 .until(ExpectedConditions.invisibilityOf(driver.findElement(DatePicker.datepickerBy)));
 
-        return new CalendarView();
+        return new CalendarView(driver, wait);
     }
 }

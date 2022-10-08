@@ -1,6 +1,6 @@
 package pl.edu.pjwstk.pjpl.scrapper.contract;
 
-import pl.edu.pjwstk.pjpl.scrapper.calendarview.SubjectPopout;
+import pl.edu.pjwstk.pjpl.scrapper.components.calendarview.SubjectPopout;
 
 import java.util.List;
 

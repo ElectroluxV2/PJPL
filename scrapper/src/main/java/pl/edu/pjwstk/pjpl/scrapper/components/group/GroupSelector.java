@@ -1,16 +1,26 @@
-package pl.edu.pjwstk.pjpl.scrapper.group;
+package pl.edu.pjwstk.pjpl.scrapper.components.group;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.util.List;
-
-import static pl.edu.pjwstk.pjpl.scrapper.Main.driver;
-import static pl.edu.pjwstk.pjpl.scrapper.Main.wait;
 
 public class GroupSelector {
     private final static By groupsListBoxBy = By.id("ctl00_ContentPlaceHolder1_GrupyListBox");
     private final static By downloadScheduleButtonBy = By.id("ctl00_ContentPlaceHolder1_PobierzPlanButton_input");
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+
+    private GroupSelector(final WebDriver driver, final WebDriverWait wait) {
+        this.driver = driver;
+        this.wait = wait;
+    }
+
+    public static GroupSelector get(final WebDriver driver, final WebDriverWait wait) {
+        return new GroupSelector(driver, wait);
+    }
 
     public List<String> listAvailableGroups() {
         return driver

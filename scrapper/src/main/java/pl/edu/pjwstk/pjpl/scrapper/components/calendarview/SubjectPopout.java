@@ -1,14 +1,13 @@
-package pl.edu.pjwstk.pjpl.scrapper.calendarview;
+package pl.edu.pjwstk.pjpl.scrapper.components.calendarview;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.*;
 import java.util.Arrays;
 import java.util.List;
-
-import static pl.edu.pjwstk.pjpl.scrapper.Main.driver;
-import static pl.edu.pjwstk.pjpl.scrapper.calendarview.CalendarView.subjectPopoutBy;
 
 public class SubjectPopout {
     public static final By studentsCountBy = By.cssSelector("span[id*=LiczbaStudentow]");
@@ -23,6 +22,13 @@ public class SubjectPopout {
     public static final By timeToBy = By.cssSelector("span[id*=GodzZakon]");
     public static final By durationBy = By.cssSelector("span[id*=CzasTrwania]");
     public static final By teamsCodeBy = By.cssSelector("span[id*=KodMsTeams]");
+    private final WebDriver driver;
+    private final WebDriverWait wait;
+
+    public SubjectPopout(final WebDriver driver, final WebDriverWait wait) {
+        this.driver = driver;
+        this.wait = wait;
+    }
 
     public String getTeamsCode() {
         return getTrimmedText(teamsCodeBy);
@@ -96,7 +102,7 @@ public class SubjectPopout {
     }
 
     private WebElement getPopout() {
-        return driver.findElement(subjectPopoutBy);
+        return driver.findElement(CalendarView.subjectPopoutBy);
     }
 
     private String getTrimmedText(final By selector) {
