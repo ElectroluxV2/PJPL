@@ -1,6 +1,5 @@
 package pl.edu.pjwstk.pjpl.scrapper;
 
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.openqa.selenium.JavascriptExecutor;
 import pl.edu.pjwstk.pjpl.scrapper.components.GroupSchedulePage;
 import pl.edu.pjwstk.pjpl.scrapper.components.calendarview.CalendarView;
@@ -14,8 +13,7 @@ import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 
-import static pl.edu.pjwstk.pjpl.scrapper.Utils.getStorage;
-import static pl.edu.pjwstk.pjpl.scrapper.Utils.humanReadableFormat;
+import static pl.edu.pjwstk.pjpl.scrapper.Utils.*;
 
 public class GroupScrapper implements Runnable {
     private final static int weeksToScrapCount = 4 * 12 * 2; // Every week for 2 years forward
@@ -113,11 +111,8 @@ public class GroupScrapper implements Runnable {
                     subjects
             );
 
-            final var mapper = JsonMapper.builder()
-                    .findAndAddModules()
-                    .build();
-
             mapper.writeValue(writer, groupDto);
+            log("Saved to `%s`".formatted(storageFile));
         } catch (final Exception exception) {
             log("An error occurred during group `%s` parsing".formatted(group));
             exception.printStackTrace(System.err);

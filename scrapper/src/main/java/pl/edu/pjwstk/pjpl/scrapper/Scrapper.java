@@ -5,13 +5,14 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import picocli.CommandLine;
 import pl.edu.pjwstk.pjpl.scrapper.components.GroupSchedulePage;
 
+import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static picocli.CommandLine.Command;
 import static picocli.CommandLine.Option;
-import static pl.edu.pjwstk.pjpl.scrapper.Utils.makeMultiLineList;
+import static pl.edu.pjwstk.pjpl.scrapper.Utils.*;
 
 @Command(name = "scrap", mixinStandardHelpOptions = true, description = "Scraps PJATK schedule to JSON files. Set storage root by setting 'PJPL.storage' env.")
 public class Scrapper implements Callable<Integer> {
@@ -47,7 +48,7 @@ public class Scrapper implements Callable<Integer> {
         return result;
     }
 
-    public Integer logic(final WebDriver driver, final WebDriverWait wait) {
+    public Integer logic(final WebDriver driver, final WebDriverWait wait) throws IOException {
         final var schedulePage = GroupSchedulePage.open(driver, wait);
 
         System.out.printf("Scrapping, filters: semester(`%s`), study(`%s`), group(`%s`).%n", semesterFilter, studyFilter, groupFilter);
@@ -61,14 +62,8 @@ public class Scrapper implements Callable<Integer> {
                 .filter(semesterName -> semesterName.contains(semesterFilter))
                 .toList();
 
-        final var studySelector = schedulePage
-                .openStudySelector();
-
-        final var studiesToScrap = studySelector
-                .listAvailableStudies()
-                .stream()
-                .filter(studyName -> studyName.contains(studyFilter))
-                .toList();
+        final var semestersIndexFile = getStorage("semesters");
+        updateIndex(semestersToScrap, semestersIndexFile);
 
         final var id = new AtomicInteger();
         for (int semesterIndex = 0, semestersToScrapSize = semestersToScrap.size(); semesterIndex < semestersToScrapSize; semesterIndex++) {
@@ -76,6 +71,18 @@ public class Scrapper implements Callable<Integer> {
             schedulePage
                     .openSemesterSelector()
                     .chooseSemester(semester);
+
+            final var studySelector = schedulePage
+                    .openStudySelector();
+
+            final var studiesToScrap = studySelector
+                    .listAvailableStudies()
+                    .stream()
+                    .filter(studyName -> studyName.contains(studyFilter))
+                    .toList();
+
+            final var studiesIndexFile = getStorage(semester, "studies");
+            updateIndex(studiesToScrap, studiesIndexFile);
 
             for (int studyIndex = 0, studiesToScrapSize = studiesToScrap.size(); studyIndex < studiesToScrapSize; studyIndex++) {
                 final var study = studiesToScrap.get(studyIndex);
@@ -89,6 +96,9 @@ public class Scrapper implements Callable<Integer> {
                         .stream()
                         .filter(groupName -> groupName.contains(groupFilter))
                         .toList();
+
+                final var groupsIndexFile = getStorage(semester, study, "groups");
+                updateIndex(groupsToScrap, groupsIndexFile);
 
                 System.out.printf("Scrapping semester [%d/%d] (`%s`), study [%d/%d] (`%s`), filters resolved the following targets:%n  semesters:%n%s%n  studies:%n%s%n  groups:%n%s%n",
                         semesterIndex + 1, semestersToScrapSize, semester,
