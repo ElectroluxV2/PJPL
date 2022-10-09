@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.text.Normalizer;
 import java.time.Duration;
+import java.util.List;
+import java.util.StringJoiner;
 
 public class Utils {
     public static String storageRoot = System.getenv("PJPL.storage");
@@ -39,5 +41,11 @@ public class Utils {
         storage.createNewFile();
 
         return storage;
+    }
+
+    public static String makeMultiLineList(final List<String> list) {
+        final var sj = new StringJoiner("\n");
+        list.forEach(s -> sj.add("- `%s`;".formatted(s)));
+        return sj.toString();
     }
 }

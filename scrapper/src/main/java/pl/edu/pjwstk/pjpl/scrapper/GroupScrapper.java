@@ -31,15 +31,19 @@ public class GroupScrapper implements Runnable {
         this.id = id;
     }
 
+    private void log(final String message) {
+        System.out.printf("Scrapper [%d] (%s): %s.%n", id, group, message);
+    }
+
     @Override
     public void run() {
-        System.out.printf("Scrapper [%d]: Start.%n", id);
+        log("Start");
 
         final File storageFile;
         try {
             storageFile = getStorage(semester, study, group);
         } catch (final IOException e) {
-            System.out.println("Failed to open storage.");
+            log("Failed to open storage");
             e.printStackTrace(System.err);
             throw new RuntimeException(e);
         }
@@ -51,7 +55,7 @@ public class GroupScrapper implements Runnable {
         try {
             writer = new BufferedWriter(new FileWriter(storageFile));
         } catch (final IOException e) {
-            System.out.printf("Failed to open file: `%s`%n", storageFile);
+            log("Failed to open file: `%s`".formatted(storageFile));
             e.printStackTrace(System.err);
             throw new RuntimeException(e);
         }
@@ -87,10 +91,10 @@ public class GroupScrapper implements Runnable {
                 final var timeSpent = System.currentTimeMillis() - timeStart;
                 final var estimatedTime = (weeksToScrapCount - weekIndex) * (timeSpent / weekIndex);
 
-                System.out.printf("Scrapper [%d]: (%s) Time: %s (%05.2f%%) Est. %s, week (%d/%d): %s.%n",
-                        id, group, humanReadableFormat(timeSpent), percentDone,
-                        humanReadableFormat(estimatedTime), weekIndex, weeksToScrapCount, calendarView.getCurrentDate()
-                );
+                log("Time: %s (%05.2f%%) Est. %s, week (%d/%d): %s".formatted(
+                        humanReadableFormat(timeSpent), percentDone, humanReadableFormat(estimatedTime),
+                        weekIndex, weeksToScrapCount, calendarView.getCurrentDate()
+                ));
 
                 ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
 
@@ -115,14 +119,14 @@ public class GroupScrapper implements Runnable {
 
             mapper.writeValue(writer, groupDto);
         } catch (final Exception exception) {
-            System.out.printf("An error occurred during group `%s` parsing.", group);
+            log("An error occurred during group `%s` parsing".formatted(group));
             exception.printStackTrace(System.err);
         } finally {
             driver.quit();
             try {
                 writer.close();
             } catch (final IOException e) {
-                System.out.printf("Failed to save file: `%s`%n", storageFile);
+                log("Failed to save file: `%s`".formatted(storageFile));
                 e.printStackTrace(System.err);
             }
         }
