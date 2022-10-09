@@ -4,34 +4,65 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import pl.edu.pjwstk.pjpl.scrapper.contract.SubjectDto;
 
 import java.time.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
-public class SubjectPopout {
-    public static final By studentsCountBy = By.cssSelector("span[id*=LiczbaStudentow]");
-    public static final By subjectCodeBy = By.cssSelector("span[id*=KodPrzedmiotu]");
-    public static final By subjectTypeBy = By.cssSelector("span[id*=TypZajec]");
+import static java.util.stream.Collectors.groupingBy;
+import static pl.edu.pjwstk.pjpl.scrapper.Utils.removeLastChars;
+
+public class EventPopout {
+    public static final String[] knownProperties = {
+            "Grupy", "Budynek", "Sala", "DataZajec", "GodzRozp", "GodzZakon", "CzasTrwania"
+    };
     public static final By groupsBy = By.cssSelector("span[id*=Grupy]");
-    public static final By lecturersBy = By.cssSelector("span[id*=Dydaktycy]");
     public static final By locationBy = By.cssSelector("span[id*=Budynek]");
     public static final By roomBy = By.cssSelector("span[id*=Sala]");
     public static final By dateBy = By.cssSelector("span[id*=DataZajec]");
     public static final By timeFromBy = By.cssSelector("span[id*=GodzRozp]");
     public static final By timeToBy = By.cssSelector("span[id*=GodzZakon]");
     public static final By durationBy = By.cssSelector("span[id*=CzasTrwania]");
-    public static final By teamsCodeBy = By.cssSelector("span[id*=KodMsTeams]");
     private final WebDriver driver;
     private final WebDriverWait wait;
+    private final String color;
 
-    public SubjectPopout(final WebDriver driver, final WebDriverWait wait) {
+    public EventPopout(final WebDriver driver, final WebDriverWait wait, final String color) {
         this.driver = driver;
         this.wait = wait;
+        this.color = color;
     }
 
-    public String getTeamsCode() {
-        return getTrimmedText(teamsCodeBy);
+    public SubjectDto toDto() {
+        return new SubjectDto(
+            getFrom(),
+            getTo(),
+            getRoom(),
+            getLocation(),
+            getGroups(),
+            color,
+            getAdditionalData()
+        );
+    }
+
+    private Map<String, String> getAdditionalData() {
+        final var allProperties = getPopout()
+                .findElements(By.cssSelector("table>tbody>tr>td>span[id], table>tbody>tr>td>b"));
+
+        final var counter = new AtomicInteger();
+
+        return allProperties
+                .stream()
+                .collect(groupingBy(x -> counter.getAndIncrement() / 2))
+                .values()
+                .stream()
+                .filter(list -> Arrays.stream(knownProperties).noneMatch(property -> list.get(1).getAttribute("id").contains(property)))
+                .filter(list -> !list.get(1).getText().trim().isEmpty())
+                .collect(Collectors.toMap(list -> removeLastChars(list.get(0).getText().trim(), 1), list -> list.get(1).getText().trim()));
     }
 
     public Duration getDuration() {
@@ -81,24 +112,8 @@ public class SubjectPopout {
         return getTrimmedText(locationBy);
     }
 
-    public List<String> getLectures() {
-        return getStringList(getTrimmedText(lecturersBy));
-    }
-
     public List<String> getGroups() {
         return getStringList(getTrimmedText(groupsBy));
-    }
-
-    public String getSubjectType() {
-        return getTrimmedText(subjectTypeBy);
-    }
-
-    public String getSubjectCode() {
-        return getTrimmedText(subjectCodeBy);
-    }
-
-    public StudentCount getStudentCount() {
-        return new StudentCount(getTrimmedText(studentsCountBy));
     }
 
     private WebElement getPopout() {
@@ -118,24 +133,5 @@ public class SubjectPopout {
 
     public void close() {
         driver.findElement(By.id("header")).click();
-    }
-
-    public static class StudentCount {
-        private final int total;
-        private final int itn;
-
-        public StudentCount(final String input) {
-            final var parts = input.split(" ");
-            total = Integer.parseInt(parts[0]);
-            itn = Integer.parseInt(parts[1]);
-        }
-
-        public int getTotal() {
-            return total;
-        }
-
-        public int getItn() {
-            return itn;
-        }
     }
 }

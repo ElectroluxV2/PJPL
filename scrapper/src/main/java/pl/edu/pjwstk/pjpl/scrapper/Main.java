@@ -31,6 +31,8 @@ public class Main {
         final var semester = "2022/2023 zimowy";
         final var study = "Informatyka niestacjonarne Gdańsk";
 
+        System.out.printf("Scrapping - semester `%s`, study `%s`.%n", semester, study);
+
         schedulePage
                 .openSemesterSelector()
                 .chooseSemester(semester);
@@ -43,9 +45,9 @@ public class Main {
                 .getGroupSelector()
                 .listAvailableGroups()
                 .stream()
-//                .limit(2)
+                .limit(1)
             ;
-        AtomicInteger id = new AtomicInteger();
+        final var id = new AtomicInteger();
         final var scrappers = availableGroups
                 .map(group -> new GroupScrapper(semester, study, group, id.incrementAndGet()));
 

@@ -1,17 +1,21 @@
 package pl.edu.pjwstk.pjpl.scrapper;
 
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
 import pl.edu.pjwstk.pjpl.scrapper.components.GroupSchedulePage;
 import pl.edu.pjwstk.pjpl.scrapper.components.calendarview.CalendarView;
+import pl.edu.pjwstk.pjpl.scrapper.contract.GroupDto;
+import pl.edu.pjwstk.pjpl.scrapper.contract.SubjectDto;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 
+import static pl.edu.pjwstk.pjpl.scrapper.Utils.getStorage;
 import static pl.edu.pjwstk.pjpl.scrapper.Utils.humanReadableFormat;
-import static pl.edu.pjwstk.pjpl.scrapper.components.calendarview.CalendarView.subjectPopoutBy;
-
 
 public class GroupScrapper implements Runnable {
     private final static int weeksToScrapCount = 4 * 12 * 2; // Every week for 2 years forward
@@ -29,14 +33,27 @@ public class GroupScrapper implements Runnable {
 
     @Override
     public void run() {
+        System.out.printf("Scrapper [%d]: Start.%n", id);
+
+        final File storageFile;
+        try {
+            storageFile = getStorage(semester, study, group);
+        } catch (final IOException e) {
+            System.out.println("Failed to open storage.");
+            e.printStackTrace(System.err);
+            throw new RuntimeException(e);
+        }
+
         final var driver = SeleniumFactory.makeDriver();
         final var wait = SeleniumFactory.makeWait(driver);
+
         final BufferedWriter writer;
         try {
-            writer = new BufferedWriter(new FileWriter("PJPL - %s.json".formatted(group)));
-        } catch (IOException e) {
+            writer = new BufferedWriter(new FileWriter(storageFile));
+        } catch (final IOException e) {
+            System.out.printf("Failed to open file: `%s`%n", storageFile);
             e.printStackTrace(System.err);
-            return;
+            throw new RuntimeException(e);
         }
 
         try {
@@ -62,13 +79,15 @@ public class GroupScrapper implements Runnable {
                     .apply()
                     .chooseFirstAvailableDay();
 
+            final var subjects = new ArrayList<SubjectDto>();
+
             final var timeStart = System.currentTimeMillis();
             for (var weekIndex = 1; weekIndex <= weeksToScrapCount; weekIndex++) {
                 final var percentDone = (double) weekIndex / weeksToScrapCount * 100;
                 final var timeSpent = System.currentTimeMillis() - timeStart;
                 final var estimatedTime = (weeksToScrapCount - weekIndex) * (timeSpent / weekIndex);
 
-                System.out.printf("Scrapper [%d] (%s) Time: %s (%05.2f%%) Est. %s, week (%d/%d): %s.%n",
+                System.out.printf("Scrapper [%d]: (%s) Time: %s (%05.2f%%) Est. %s, week (%d/%d): %s.%n",
                         id, group, humanReadableFormat(timeSpent), percentDone,
                         humanReadableFormat(estimatedTime), weekIndex, weeksToScrapCount, calendarView.getCurrentDate()
                 );
@@ -76,31 +95,49 @@ public class GroupScrapper implements Runnable {
                 ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
 
                 for (final var subject : calendarView.getAvailableSubjects()) {
-                    this.scrapGroup(calendarView, subject, driver, writer);
+                    subjects.add(this.scrapSubject(calendarView, subject));
                 }
 
                 calendarView.goToNextWeek();
             }
+
+            final var groupDto = new GroupDto(
+                    group,
+                    semester,
+                    study,
+                    ZonedDateTime.now(),
+                    subjects
+            );
+
+            final var mapper = JsonMapper.builder()
+                    .findAndAddModules()
+                    .build();
+
+            mapper.writeValue(writer, groupDto);
         } catch (final Exception exception) {
+            System.out.printf("An error occurred during group `%s` parsing.", group);
             exception.printStackTrace(System.err);
         } finally {
             driver.quit();
             try {
                 writer.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
+                System.out.printf("Failed to save file: `%s`%n", storageFile);
                 e.printStackTrace(System.err);
             }
         }
     }
 
-    private void scrapGroup(final CalendarView calendarView, final String subject, final WebDriver driver, final BufferedWriter writer) throws IOException {
+    private SubjectDto scrapSubject(final CalendarView calendarView, final String subject) {
         final var subjectPopout = calendarView
                 .openSubjectPopout(subject);
 
-        writer.write("-----------\n");
-        writer.write(driver.findElement(subjectPopoutBy).getText());
-        writer.write("\n-----------\n");
+        final var dto = subjectPopout
+                .toDto();
 
-        subjectPopout.close();
+        subjectPopout
+                .close();
+
+        return dto;
     }
 }

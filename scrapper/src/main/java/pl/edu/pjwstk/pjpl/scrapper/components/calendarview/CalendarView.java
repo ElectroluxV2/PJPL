@@ -8,7 +8,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.List;
 
-import static pl.edu.pjwstk.pjpl.scrapper.components.calendarview.SubjectPopout.dateBy;
+import static pl.edu.pjwstk.pjpl.scrapper.components.calendarview.EventPopout.dateBy;
 
 public class CalendarView {
     private static final By nextWeekButtonBy = By.className("rsNextDay");
@@ -52,7 +52,7 @@ public class CalendarView {
                 .toList();
     }
 
-    public SubjectPopout openSubjectPopout(final String subjectId) {
+    public EventPopout openSubjectPopout(final String subjectId) {
         final var subject = driver
                 .findElement(By.id(subjectId));
 
@@ -60,6 +60,9 @@ public class CalendarView {
                 .getText()
                 .trim()
                 .split(" ")[0];
+
+        final var subjectColor = subject
+                .getCssValue("background-color");
 
         subject.click();
 
@@ -71,6 +74,6 @@ public class CalendarView {
                 .withTimeout(Duration.ofSeconds(90)) // Sometimes this site lags as hell
                 .until(ExpectedConditions.textToBePresentInElementLocated(subjectPopoutBy, subjectCode));
 
-        return new SubjectPopout(driver, wait);
+        return new EventPopout(driver, wait, subjectColor);
     }
 }
