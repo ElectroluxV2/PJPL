@@ -17,11 +17,11 @@ import static pl.edu.pjwstk.pjpl.scrapper.Utils.*;
 @Command(name = "scrap", mixinStandardHelpOptions = true, description = "Scraps PJATK schedule to JSON files. Set storage root by setting 'PJPL.storage' env.")
 public class Scrapper implements Callable<Integer> {
     @Option(names = {"-se", "--semester"}, description = "Scrap only semesters that contains this string. If set to 'current' automatically filters semesters by current year.")
-    private String semesterFilter = "2022/2023 zimowy";
+    private String semesterFilter = "";//"2022/2023 zimowy";
     @Option(names = {"-st", "--study"}, description = "Scrap only studies that contains this string.")
-    private String studyFilter = "Informatyka niestacjonarne Gdańsk";
+    private String studyFilter = "";//"Informatyka niestacjonarne Gdańsk";
     @Option(names = {"-gr", "--group"}, description = "Scrap only groups that contains this string.")
-    private String groupFilter = "GIn I.5 - 54c";
+    private String groupFilter = "";//"GIn I.5 - 54c";
 
     public static void main(final String[] args) {
         int exitCode = new CommandLine(new Scrapper()).execute(args);
@@ -59,7 +59,7 @@ public class Scrapper implements Callable<Integer> {
         final var semestersToScrap = semesterSelector
                 .listAvailableSemesters()
                 .stream()
-                .filter(semesterName -> semesterName.contains(semesterFilter))
+                .filter(semesterName -> semesterFilter.isEmpty() || semesterName.contains(semesterFilter))
                 .toList();
 
         final var semestersIndexFile = getStorage("semesters");
@@ -78,7 +78,7 @@ public class Scrapper implements Callable<Integer> {
             final var studiesToScrap = studySelector
                     .listAvailableStudies()
                     .stream()
-                    .filter(studyName -> studyName.contains(studyFilter))
+                    .filter(studyName -> semesterFilter.isEmpty() || studyName.contains(studyFilter))
                     .toList();
 
             final var studiesIndexFile = getStorage(semester, "studies");
@@ -94,7 +94,7 @@ public class Scrapper implements Callable<Integer> {
                         .getGroupSelector()
                         .listAvailableGroups()
                         .stream()
-                        .filter(groupName -> groupName.contains(groupFilter))
+                        .filter(groupName -> groupFilter.isEmpty() || groupName.contains(groupFilter))
                         .toList();
 
                 final var groupsIndexFile = getStorage(semester, study, "groups");
