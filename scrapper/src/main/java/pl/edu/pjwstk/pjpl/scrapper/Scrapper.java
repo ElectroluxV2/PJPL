@@ -24,6 +24,7 @@ public class Scrapper implements Callable<Integer> {
     private String groupFilter = "";//"GIn I.5 - 54c";
 
     public static void main(final String[] args) {
+        System.setProperty("webdriver.chrome.driver", System.getenv("PJPL_webdriver"));
         int exitCode = new CommandLine(new Scrapper()).execute(args);
         System.exit(exitCode);
     }

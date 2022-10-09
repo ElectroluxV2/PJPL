@@ -21,7 +21,7 @@ public class Utils {
                 .findAndAddModules()
                 .build();
     }
-    public static String storageRoot = System.getenv("PJPL.storage");
+    public static String storageRoot = System.getenv("PJPL_storage");
     public static String humanReadableFormat(final long milliseconds) {
         return Duration
                 .ofMillis(milliseconds)
