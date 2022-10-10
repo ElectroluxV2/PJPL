@@ -35,15 +35,28 @@ public class GroupScrapper implements Runnable {
 
     @Override
     public void run() {
+        int counter = 0;
+        while (counter < 10) {
+            try {
+                logic();
+                break;
+            } catch (final IOException exception) {
+                log("An error occurred during group `%s` parsing, trying again (%d / 10).".formatted(group, ++counter));
+                exception.printStackTrace(System.err);
+            }
+        }
+    }
+
+    private void logic() throws IOException {
         log("Start");
 
         final File storageFile;
         try {
             storageFile = getStorage(semester, study, group);
-        } catch (final IOException e) {
+        } catch (final IOException exception) {
             log("Failed to open storage");
-            e.printStackTrace(System.err);
-            throw new RuntimeException(e);
+            exception.printStackTrace(System.err);
+            throw new RuntimeException(exception);
         }
 
         final var driver = SeleniumFactory.makeDriver();
@@ -52,78 +65,75 @@ public class GroupScrapper implements Runnable {
         final BufferedWriter writer;
         try {
             writer = new BufferedWriter(new FileWriter(storageFile));
-        } catch (final IOException e) {
+        } catch (final IOException exception) {
             log("Failed to open file: `%s`".formatted(storageFile));
-            e.printStackTrace(System.err);
-            throw new RuntimeException(e);
+            exception.printStackTrace(System.err);
+            throw new RuntimeException(exception);
         }
 
+        final var schedulePage = GroupSchedulePage.open(driver, wait);
+
+        schedulePage
+                .openSemesterSelector()
+                .chooseSemester(semester);
+
+        schedulePage
+                .openStudySelector()
+                .chooseStudy(study);
+
+        schedulePage
+                .getGroupSelector()
+                .chooseGroup(group);
+
+        final var calendarView = schedulePage
+                .openDatePicker()
+                .openMonthView()
+                .selectMonth(1)
+                .selectYear(Integer.parseInt(semester.split("/")[0]))
+                .apply()
+                .chooseFirstAvailableDay();
+
+        final var subjects = new ArrayList<SubjectDto>();
+
+        final var timeStart = System.currentTimeMillis();
+        for (var weekIndex = 1; weekIndex <= weeksToScrapCount; weekIndex++) {
+            final var percentDone = (double) weekIndex / weeksToScrapCount * 100;
+            final var timeSpent = System.currentTimeMillis() - timeStart;
+            final var estimatedTime = (weeksToScrapCount - weekIndex) * (timeSpent / weekIndex);
+
+            log("Time: %s (%05.2f%%) Est. %s, week (%d/%d): %s".formatted(
+                    humanReadableFormat(timeSpent), percentDone, humanReadableFormat(estimatedTime),
+                    weekIndex, weeksToScrapCount, calendarView.getCurrentDate()
+            ));
+
+            ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
+
+            for (final var subject : calendarView.getAvailableSubjects()) {
+                subjects.add(this.scrapSubject(calendarView, subject));
+            }
+
+            calendarView.goToNextWeek();
+        }
+
+        final var groupDto = new GroupDto(
+                group,
+                semester,
+                study,
+                ZonedDateTime.now(),
+                subjects
+        );
+
+        mapper.writeValue(writer, groupDto);
+        log("Saved to `%s`".formatted(storageFile));
+
+        driver.quit();
+
         try {
-            final var schedulePage = GroupSchedulePage.open(driver, wait);
-
-            schedulePage
-                    .openSemesterSelector()
-                    .chooseSemester(semester);
-
-            schedulePage
-                    .openStudySelector()
-                    .chooseStudy(study);
-
-            schedulePage
-                    .getGroupSelector()
-                    .chooseGroup(group);
-
-            final var calendarView = schedulePage
-                    .openDatePicker()
-                    .openMonthView()
-                    .selectMonth(1)
-                    .selectYear(Integer.parseInt(semester.split("/")[0]))
-                    .apply()
-                    .chooseFirstAvailableDay();
-
-            final var subjects = new ArrayList<SubjectDto>();
-
-            final var timeStart = System.currentTimeMillis();
-            for (var weekIndex = 1; weekIndex <= weeksToScrapCount; weekIndex++) {
-                final var percentDone = (double) weekIndex / weeksToScrapCount * 100;
-                final var timeSpent = System.currentTimeMillis() - timeStart;
-                final var estimatedTime = (weeksToScrapCount - weekIndex) * (timeSpent / weekIndex);
-
-                log("Time: %s (%05.2f%%) Est. %s, week (%d/%d): %s".formatted(
-                        humanReadableFormat(timeSpent), percentDone, humanReadableFormat(estimatedTime),
-                        weekIndex, weeksToScrapCount, calendarView.getCurrentDate()
-                ));
-
-                ((JavascriptExecutor) driver).executeScript("window.scrollTo(0, document.body.scrollHeight)");
-
-                for (final var subject : calendarView.getAvailableSubjects()) {
-                    subjects.add(this.scrapSubject(calendarView, subject));
-                }
-
-                calendarView.goToNextWeek();
-            }
-
-            final var groupDto = new GroupDto(
-                    group,
-                    semester,
-                    study,
-                    ZonedDateTime.now(),
-                    subjects
-            );
-
-            mapper.writeValue(writer, groupDto);
-            log("Saved to `%s`".formatted(storageFile));
-        } catch (final Exception exception) {
-            log("An error occurred during group `%s` parsing".formatted(group));
+            writer.close();
+        } catch (final IOException exception) {
+            log("Failed to save file: `%s`".formatted(storageFile));
             exception.printStackTrace(System.err);
-        } finally {
-            driver.quit();
-            try {
-                writer.close();
-            } catch (final IOException e) {
-                log("Failed to save file: `%s`".formatted(storageFile));
-                e.printStackTrace(System.err);
-            }
+            throw new RuntimeException(exception);
         }
     }
 

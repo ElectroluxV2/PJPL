@@ -6,6 +6,7 @@ import picocli.CommandLine;
 import pl.edu.pjwstk.pjpl.scrapper.components.GroupSchedulePage;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -79,7 +80,7 @@ public class Scrapper implements Callable<Integer> {
             final var studiesToScrap = studySelector
                     .listAvailableStudies()
                     .stream()
-                    .filter(studyName -> semesterFilter.isEmpty() || studyName.contains(studyFilter))
+                    .filter(studyName -> studyFilter.isEmpty() || Arrays.stream(studyFilter.split(",")).allMatch(studyName::contains))
                     .toList();
 
             final var studiesIndexFile = getStorage(semester, "studies");
