@@ -112,7 +112,8 @@ public class Scrapper implements Callable<Integer> {
                         .stream()
                         .map(group -> new GroupScrapper(semester, study, group, id.incrementAndGet()));
 
-                try (final var service = Executors.newCachedThreadPool()) {
+                try (final var service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
+
                     scrappers.forEach(service::submit);
                 }
             }
