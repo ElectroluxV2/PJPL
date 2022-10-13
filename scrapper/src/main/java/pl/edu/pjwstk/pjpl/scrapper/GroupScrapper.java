@@ -6,9 +6,7 @@ import pl.edu.pjwstk.pjpl.scrapper.components.calendarview.CalendarView;
 import pl.edu.pjwstk.pjpl.scrapper.contract.GroupDto;
 import pl.edu.pjwstk.pjpl.scrapper.contract.SubjectDto;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -61,16 +59,6 @@ public class GroupScrapper implements Runnable {
 
         final var driver = SeleniumFactory.makeDriver();
         final var wait = SeleniumFactory.makeWait(driver);
-
-        final BufferedWriter writer;
-        try {
-            writer = new BufferedWriter(new FileWriter(storageFile));
-        } catch (final IOException exception) {
-            log("Failed to open file: `%s`".formatted(storageFile));
-            exception.printStackTrace(System.err);
-            throw new RuntimeException(exception);
-        }
-
         final var schedulePage = GroupSchedulePage.open(driver, wait);
 
         schedulePage
@@ -123,18 +111,10 @@ public class GroupScrapper implements Runnable {
                 subjects
         );
 
-        mapper.writeValue(writer, groupDto);
+        mapper.writeValue(storageFile, groupDto);
         log("Saved to `%s`".formatted(storageFile));
 
         driver.quit();
-
-        try {
-            writer.close();
-        } catch (final IOException exception) {
-            log("Failed to save file: `%s`".formatted(storageFile));
-            exception.printStackTrace(System.err);
-            throw new RuntimeException(exception);
-        }
     }
 
     private SubjectDto scrapSubject(final CalendarView calendarView, final String subject) {
