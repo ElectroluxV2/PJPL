@@ -1,3 +1,13 @@
+<router-outlet></router-outlet>
+
 <mat-toolbar>
-  <span>PJPL</span>
+  <button mat-icon-button color="primary" routerLink="calendar" routerLinkActive="active">
+    <mat-icon>calendar_month</mat-icon>
+    <span>Kalendarz</span>
+  </button>
+
+  <button mat-icon-button color="primary" routerLink="today" routerLinkActive="active">
+    <mat-icon>today</mat-icon>
+    <span>Dziś</span>
+  </button>
 </mat-toolbar>

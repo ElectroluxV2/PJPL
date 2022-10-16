@@ -1,0 +1,11 @@
+:host {
+  // noinspection CssInvalidPropertyValue
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+
+  mat-toolbar {
+    margin-top: auto;
+    justify-content: space-around
+  }
+}
