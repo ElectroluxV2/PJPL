@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
+import {Component} from '@angular/core';
+import {ActivatedRoute} from "@angular/router";
+import {MatButton} from "@angular/material/button";
 
 @Component({
   selector: 'app-root',
@@ -8,9 +9,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 })
 export class AppComponent {
 
-
-  constructor(private readonly route: ActivatedRoute) {
-    route.url.subscribe(url => console.log(url.join()))
+  public isActive(button: MatButton) {
+    return button._elementRef.nativeElement.classList.contains('active');
   }
-
 }

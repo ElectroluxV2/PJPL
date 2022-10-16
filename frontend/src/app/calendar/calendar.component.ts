@@ -6,6 +6,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./calendar.component.scss']
 })
 export class CalendarComponent implements OnInit {
+  public readonly months = Array.from({length: 1000}).map((v, i) => ({
+    name: `Month #${i}`,
+    days: Array.from({length: 31}).fill(0)
+  }));
 
   constructor() { }
 
