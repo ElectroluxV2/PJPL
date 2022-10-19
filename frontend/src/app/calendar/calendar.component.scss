@@ -1,6 +1,18 @@
+@use '@angular/material' as mat;
+
+@mixin theme($theme) {
+  $accent: map-get($theme, accent);
+  $primary: map-get($theme, primary);
+  $warn: map-get($theme, warn);
+
+  section.legend {
+    background-color: mat.get-color-from-palette($accent, 800) !important;
+    color: mat.get-color-from-palette($primary, 900) !important;
+  }
+}
+
 :host {
   height: 100%;
-  padding: 1em;
   overflow: scroll;
 
   section.legend, section.calendar {
@@ -11,24 +23,40 @@
   }
 
   section.legend {
+    padding: 0.2em 1em;
     position: sticky;
+    z-index: 1;
     top: 0;
-    background-color: red;
+
+    h2 {
+      margin: 0;
+      font-size: 6vw;
+    }
   }
 
   section.calendar {
-    span.month {
-      grid-column: 1 / span 7;
-      justify-self: left;
-    }
+    padding: 1em;
 
-    span.day {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      border: 1px solid blue;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
+    article.month {
+      display: contents;
+
+      span.label {
+        margin: 1.2em 0 0.4em;
+        grid-column: 1 / span 7;
+        justify-self: left;
+        font-size: 6vw;
+      }
+
+      a.day {
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        border: 1px solid blue;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        text-decoration: none;
+        font-size: 5vw;
+      }
     }
   }
 }
