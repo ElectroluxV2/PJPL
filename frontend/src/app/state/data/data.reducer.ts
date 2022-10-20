@@ -1,6 +1,6 @@
 import {createReducer, on} from '@ngrx/store';
 import {DataState, initialDataState} from "./data.state";
-import {addSemesterToSelected, removeSemesterFromSelected, setSemesters} from "./data.actions";
+import {addSemesterToSelected, removeSemesterFromSelected, setSemesters, setStudies} from "./data.actions";
 
 export const dataReducer = createReducer<DataState>(
   initialDataState,
@@ -19,5 +19,9 @@ export const dataReducer = createReducer<DataState>(
       ...state,
       selectedSemestersIds: Array.from(asSet)
     }
-  })
+  }),
+  on(setStudies, (state, { studies }): DataState => ({
+    ...state,
+    studies
+  }))
 );

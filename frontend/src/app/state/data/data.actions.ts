@@ -21,4 +21,5 @@ export const removeSemesterFromSelected = createAction(
 
 export const setStudies = createAction(
   'Set studies',
+  props<{ studies: Record<string, Record<string, string>> }>()
 );

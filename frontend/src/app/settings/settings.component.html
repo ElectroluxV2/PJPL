@@ -16,7 +16,7 @@
     <mat-form-field appearance="fill">
       <mat-label>Studia</mat-label>
       <mat-select multiple>
-        <mat-optgroup *ngFor="let semester of studies$" [label]="semester.name">
+        <mat-optgroup *ngFor="let semester of studies$ | async" [label]="semester.name">
           <mat-option *ngFor="let study of semester.studies" [value]="study.id">{{ study.name }}</mat-option>
         </mat-optgroup>
       </mat-select>

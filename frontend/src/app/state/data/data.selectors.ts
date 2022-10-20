@@ -1,7 +1,6 @@
 import {createFeatureSelector, createSelector} from "@ngrx/store";
 import {DataState} from "./data.state";
 
-
 export const getDataState = createFeatureSelector<DataState>('data');
 
 export const getSemesters = createSelector(
@@ -17,4 +16,17 @@ export const getSemestersList = createSelector(
 export const getSelectedSemestersIds = createSelector(
   getDataState,
   state => state.selectedSemestersIds
+);
+
+export const getStudies = createSelector(
+  getDataState,
+  store => store.studies
+);
+
+export const getStudiesList = createSelector(
+  getStudies,
+  studies => Object.entries(studies).map(([semesterId, studiesIndex]) => ({
+    name: semesterId,
+    studies: Object.entries(studiesIndex).map(([name, id]) => ({name, id}))
+  }))
 );

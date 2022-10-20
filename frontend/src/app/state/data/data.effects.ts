@@ -1,13 +1,11 @@
 import {Actions, createEffect, ofType} from "@ngrx/effects";
 import {DataService} from "../../services/data.service";
 import {
-  addSemesterToSelected,
   loadSemesters,
-  removeSemesterFromSelected,
   setSemesters,
   setStudies
 } from "./data.actions";
-import {distinctUntilChanged, forkJoin, map, mergeMap, Observable, switchMap, withLatestFrom} from "rxjs";
+import {forkJoin, map, mergeMap, switchMap, withLatestFrom} from "rxjs";
 import {Injectable} from "@angular/core";
 import {getSemestersList} from "./data.selectors";
 import {Store} from "@ngrx/store";
@@ -27,14 +25,10 @@ export class DataEffects {
     map(semesters => setSemesters({ semesters }))
   ));
 
-  // @ts-ignore
   loadStudies$ = createEffect(() => this.actions$.pipe(
     ofType(setSemesters),
     withLatestFrom(this.store.select(getSemestersList)),
     mergeMap(([action, semesters]) => forkJoin(Object.fromEntries(semesters.map(semester => [semester.id, this.dataService.loadStudies(semester.id)])))),
-    map(studies => {
-      console.log(studies);
-      return setStudies()
-    })
-  ))
+    map(studies => setStudies({ studies }))
+  ));
 }
