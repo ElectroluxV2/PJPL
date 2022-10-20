@@ -11,7 +11,7 @@ export const getSemesters = createSelector(
 
 export const getSemestersList = createSelector(
   getSemesters,
-  semesters => Object.entries(semesters)
+  semesters => Object.entries(semesters).map(([name, id]) => ({name, id}))
 );
 
 export const getSelectedSemestersIds = createSelector(

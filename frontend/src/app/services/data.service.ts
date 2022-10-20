@@ -8,13 +8,18 @@ import {Observable} from "rxjs";
 export class DataService {
   private static readonly API = "//s2.budziszm.pl/data";
 
-  constructor(private readonly http: HttpClient) {
-
-  }
+  constructor(private readonly http: HttpClient) { }
 
   public loadSemesters(): Observable<Record<string, string>> {
-    return this
-      .get<Record<string, string>>('semesters.json');
+    return this.getIndex('semesters');
+  }
+
+  public loadStudies(semesterId: string): Observable<Record<string, string>> {
+    return this.getIndex(`${semesterId}/studies`);
+  }
+
+  private getIndex(path: string): Observable<Record<string, string>> {
+    return this.get<Record<string, string>>(`${path}.json`);
   }
 
   private get<T>(endpoint: string): Observable<T> {

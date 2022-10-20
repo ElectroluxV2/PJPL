@@ -19,3 +19,6 @@ export const removeSemesterFromSelected = createAction(
   props<{ semesterId: string }>()
 );
 
+export const setStudies = createAction(
+  'Set studies',
+);

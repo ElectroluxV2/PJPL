@@ -15,6 +15,7 @@ export class SettingsComponent implements OnDestroy {
   public readonly semesters$ = this.store.select(getSemestersList);
   public readonly selectedSemestersIds$ = this.store.select(getSelectedSemestersIds);
   private alive = true;
+  studies$: any;
 
   constructor(private readonly store: Store<State>) { }
 
@@ -22,7 +23,7 @@ export class SettingsComponent implements OnDestroy {
     this.alive = false;
   }
 
-  public onSelectionChange({ source: { selected, value: semesterId } }: MatOptionSelectionChange<string>): void {
+  public onSemesterSelectionChange({ source: { selected, value: semesterId } }: MatOptionSelectionChange<string>): void {
     selected ?
       this.store.dispatch(addSemesterToSelected({ semesterId })) :
       this.store.dispatch(removeSemesterFromSelected({ semesterId }))
