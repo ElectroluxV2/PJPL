@@ -16,7 +16,6 @@ export class AppComponent {
     this.store.dispatch(loadSemesters());
   }
 
-
   public isActive(button: MatButton) {
     return button._elementRef.nativeElement.classList.contains('active');
   }

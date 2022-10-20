@@ -3,10 +3,11 @@
   <mat-list-item>
     <mat-form-field appearance="outline">
       <mat-label>Semestry</mat-label>
-      <mat-select multiple>
+      <mat-select multiple [value]="selectedSemestersIds$ | async">
         <mat-option
           *ngFor="let semester of semesters$ | async"
           [value]="semester[1]"
+          (onSelectionChange)="onSelectionChange($event)"
         >{{ semester[0] }}</mat-option>
       </mat-select>
     </mat-form-field>

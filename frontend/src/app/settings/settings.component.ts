@@ -1,7 +1,9 @@
 import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
 import {Store} from "@ngrx/store";
 import {State} from "../state/state";
-import {getSemestersList} from "../state/data/data.selectors";
+import {getSelectedSemestersIds, getSemestersList} from "../state/data/data.selectors";
+import {MatOptionSelectionChange} from "@angular/material/core";
+import {addSemesterToSelected, removeSemesterFromSelected} from "../state/data/data.actions";
 
 @Component({
   selector: 'app-settings',
@@ -11,6 +13,7 @@ import {getSemestersList} from "../state/data/data.selectors";
 })
 export class SettingsComponent implements OnDestroy {
   public readonly semesters$ = this.store.select(getSemestersList);
+  public readonly selectedSemestersIds$ = this.store.select(getSelectedSemestersIds);
   private alive = true;
 
   constructor(private readonly store: Store<State>) { }
@@ -19,4 +22,9 @@ export class SettingsComponent implements OnDestroy {
     this.alive = false;
   }
 
+  public onSelectionChange({ source: { selected, value: semesterId } }: MatOptionSelectionChange<string>): void {
+    selected ?
+      this.store.dispatch(addSemesterToSelected({ semesterId })) :
+      this.store.dispatch(removeSemesterFromSelected({ semesterId }))
+  }
 }

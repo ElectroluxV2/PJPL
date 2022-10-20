@@ -13,3 +13,8 @@ export const getSemestersList = createSelector(
   getSemesters,
   semesters => Object.entries(semesters)
 );
+
+export const getSelectedSemestersIds = createSelector(
+  getDataState,
+  state => state.selectedSemestersIds
+);
