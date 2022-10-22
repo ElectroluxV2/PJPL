@@ -18,11 +18,6 @@ import {MatListModule} from "@angular/material/list";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {StoreModule} from '@ngrx/store';
-import {StoreDevtoolsModule} from "@ngrx/store-devtools";
-import {EffectsModule} from "@ngrx/effects";
-import {dataReducer} from "./state/data/data.reducer";
-import {DataEffects} from "./state/data/data.effects";
 
 @NgModule({
   declarations: [
@@ -53,15 +48,6 @@ import {DataEffects} from "./state/data/data.effects";
     MatSelectModule,
     ReactiveFormsModule,
     FormsModule,
-    StoreModule.forRoot({
-      'data': dataReducer
-    }),
-    StoreDevtoolsModule.instrument({
-      name: 'PJPL',
-      maxAge: 25,
-      logOnly: environment.production
-    }),
-    EffectsModule.forRoot([DataEffects])
   ],
   providers: [],
   bootstrap: [AppComponent]
