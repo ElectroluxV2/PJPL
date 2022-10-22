@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {firstValueFrom, Observable} from "rxjs";
+import {firstValueFrom, map, Observable, tap} from "rxjs";
 
 interface Event {
-  from: Date;
-  to: Date;
+  from: number;
+  to: number;
   room: string;
   location: string;
   groups: string[];
@@ -13,7 +13,7 @@ interface Event {
 }
 
 interface Metadata {
-  updated: Date;
+  updated: number;
   study: string;
   name: string;
   semester: string;
@@ -47,9 +47,12 @@ export class DataService {
   public readonly selectedStudiesIds = new Set<string>();
   public readonly availableGroups: Grouped<Group>[] = [];
   public readonly selectedGroupsIds = new Set<string>();
+  public readonly subjects = new Map<number, Subject[]>();
 
   constructor(private readonly http: HttpClient) {
     void this.loadData();
+
+    // console.log(new Date(new Date(1664969400 * 1000).toDateString()).valueOf())
   }
 
   private async loadData(): Promise<void> {
@@ -78,24 +81,54 @@ export class DataService {
           name: `${semester.name} - ${study.name}`,
           items: groups
         });
+
+        for (const group of groups) {
+          const subjects: Subject[] = await firstValueFrom(this.loadSubjects(group.id));
+          for (const subject of subjects) {
+            const key = new Date(new Date(subject.from * 1000).toDateString()).valueOf(); // Date without time
+
+            if (!this.subjects.has(key)) {
+              this.subjects.set(key, []);
+            }
+
+            this.subjects.get(key)!.push(subject);
+          }
+        }
       }
     }
+
+    const json = JSON.stringify(Array.from(this.subjects.entries()));
+    console.log(json)
+    const parsed = new Map(JSON.parse(json));
+    console.log(parsed)
   }
 
   public loadSemesters(): Observable<Record<string, string>> {
     return this.getIndex('semesters');
   }
 
-  public loadStudies(semester: string): Observable<Record<string, string>> {
-    return this.getIndex(`${semester}/studies`);
+  public loadStudies(semesterId: string): Observable<Record<string, string>> {
+    return this.getIndex(`${semesterId}/studies`);
   }
 
-  public loadGroups(semesterWithStudy: string): Observable<Record<string, string>> {
-    return this.getIndex(`${semesterWithStudy}/groups`);
+  public loadGroups(studyId: string): Observable<Record<string, string>> {
+    return this.getIndex(`${studyId}/groups`);
+  }
+
+  public loadSubjects(groupId: string): Observable<Subject[]> {
+    return this.get<Metadata & { subjects: Event[] }>(`${groupId}.json`).pipe(
+      map(response => !response ? [] : response.subjects.map(event => ({
+        ...event,
+        updated: response.updated,
+        study: response.study,
+        name: response.name,
+        semester: response.semester
+      })))
+    );
   }
 
   private getIndex(path: string): Observable<Record<string, string>> {
-    return this.get<Record<string, string>>(`${path}.json`);
+    return this.get(`${path}.json`);
   }
 
   private get<T>(endpoint: string): Observable<T> {
