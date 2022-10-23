@@ -13,7 +13,7 @@
 
 :host {
   height: 100%;
-  overflow: scroll;
+  overflow-y: scroll;
 
   section.legend, section.calendar {
     display: grid;

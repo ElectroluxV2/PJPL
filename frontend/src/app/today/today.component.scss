@@ -1,0 +1,9 @@
+::ng-deep .subject > .mat-list-item-content {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+}
+
+:host {
+  height: 100%;
+  overflow-y: scroll;
+}

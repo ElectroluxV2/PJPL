@@ -1,1 +1,15 @@
-<p>today works!</p>
+<mat-list>
+  <ng-container *ngFor="let subject of subjects">
+    <mat-list-item class="subject" mat-ripple>
+      <mat-label mat-line>Sala: {{ subject.room }}</mat-label>
+      <span mat-line>Od: {{ subject.from * 1000 | date: 'MMM d, y, HH:mm': '': 'pl-PL' }}</span>
+      <span mat-line>Do: {{ subject.to * 1000 | date: 'MMM d, y, HH:mm': '': 'pl-PL' }}</span>
+      <ul>
+        <li *ngFor="let info of iterate(subject.additionalData)" mat-line>
+          {{ info[0] }}: {{ info[1] }}
+        </li>
+      </ul>
+    </mat-list-item>
+    <mat-divider></mat-divider>
+  </ng-container>
+</mat-list>
