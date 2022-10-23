@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {firstValueFrom, map, Observable, tap} from "rxjs";
+import {firstValueFrom, map, Observable} from "rxjs";
+import * as LZ from 'lz-string';
 
 interface Event {
   from: number;
@@ -98,7 +99,9 @@ export class DataService {
     }
 
     const json = JSON.stringify(Array.from(this.subjects.entries()));
-    console.log(json)
+    console.log(json);
+    const compressed = LZ.compress(json);
+    console.log(compressed)
     const parsed = new Map(JSON.parse(json));
     console.log(parsed)
   }
