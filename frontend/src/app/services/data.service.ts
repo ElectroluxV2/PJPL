@@ -80,8 +80,8 @@ export class DataService {
 
         this.subjects.get(timestamp)!.push(subject);
 
-        this.begin = Math.min(this.begin, from);
-        this.end = Math.max(this.end, from);
+        this.begin = Math.min(this.begin, timestamp);
+        this.end = Math.max(this.end, timestamp);
       }
     }
 
@@ -172,5 +172,9 @@ export class DataService {
 
   private get<T>(endpoint: string): Observable<T> {
     return this.http.get<T>(`${DataService.API}/${endpoint}`);
+  }
+
+  public makeKey(year: number, month: number, day: number): number {
+    return new Date(year, month, day).valueOf();
   }
 }

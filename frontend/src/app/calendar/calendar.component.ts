@@ -55,21 +55,21 @@ export class CalendarComponent {
       const endMonth = year === end.year ? end.month : 11;
 
       for (let month = beginMonth; month <= endMonth; month++) {
-        const firstDayInMonth = new Date(year, month, 100);
-        const monthOffset = firstDayInMonth.getDay();
-        const lastDayInMonth = new Date(year, month, 0);
+        const firstDayInMonth = new Date(year, month, 1);
+        const monthOffset = firstDayInMonth.getDay() - 1;
+        const lastDayInMonth = new Date(year, month + 1, 0);
         const daysInMonth = lastDayInMonth.getDate();
 
         this.months.push({
-          name: formatter.format(lastDayInMonth),
+          name: formatter.format(new Date(year, month, 1)),
           offset: monthOffset,
           year,
           index: month,
           days: Array
             .from({length: daysInMonth})
             .map((value, index) => ({
-              index,
-              color: subjects.has(new Date(year, month, index).valueOf()) ? 'red' : 'none'
+              index: index + 1,
+              color: subjects.has(new Date(year, month, index + 1).valueOf()) ? 'red' : 'none'
             }))
         })
       }
