@@ -9,7 +9,7 @@ const routes: Routes = [{
   path: 'calendar',
   component: CalendarComponent
 }, {
-  path: 'today/:year/:day',
+  path: 'today/:year/:month/:day',
   component: TodayComponent
 }, {
   path: 'today',

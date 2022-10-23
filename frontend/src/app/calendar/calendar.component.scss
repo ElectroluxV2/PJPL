@@ -56,6 +56,10 @@
         place-items: center;
         text-decoration: none;
         font-size: 5vw;
+
+        &.red {
+          border-color: red;
+        }
       }
     }
   }

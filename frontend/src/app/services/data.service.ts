@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {firstValueFrom, map, Observable} from "rxjs";
+import {BehaviorSubject, firstValueFrom, map, Observable} from "rxjs";
 import * as LZ from 'lz-string';
 
 interface Event {
@@ -48,15 +48,52 @@ export class DataService {
   public readonly selectedStudiesIds = new Set<string>();
   public readonly availableGroups: Grouped<Group>[] = [];
   public readonly selectedGroupsIds = new Set<string>();
-  public readonly subjects = new Map<number, Subject[]>();
+  private readonly subjects = new Map<number, Subject[]>();
+  public readonly subjects$ = new BehaviorSubject<Map<number, Subject[]>>(new Map());
+  public begin: number = Number.MAX_VALUE;
+  public end: number = 0;
 
   constructor(private readonly http: HttpClient) {
-    void this.loadData();
+    // this.sync().then(() => );
+    this.load();
 
     // console.log(new Date(new Date(1664969400 * 1000).toDateString()).valueOf())
   }
 
-  private async loadData(): Promise<void> {
+  private load(): void {
+    console.time('load');
+
+    const cachedGroups = Object.keys(localStorage).filter(key => key.includes('G-'));
+
+    for (const groupKey of cachedGroups) {
+      const compressed = localStorage.getItem(groupKey)!;
+      const json = LZ.decompress(compressed)!;
+      const subjects: Subject[] = JSON.parse(json);
+
+      for (const subject of subjects) {
+        const from = subject.from * 1000;
+        const timestamp = new Date(new Date(from).toDateString()).valueOf(); // Date without time
+
+        if (!this.subjects.has(timestamp)) {
+          this.subjects.set(timestamp, []);
+        }
+
+        this.subjects.get(timestamp)!.push(subject);
+
+        this.begin = Math.min(this.begin, from);
+        this.end = Math.max(this.end, from);
+      }
+    }
+
+    this.subjects$.next(this.subjects);
+
+    console.timeEnd('load');
+  }
+
+  private async sync(): Promise<void> {
+    console.log('Sync start')
+    console.time('sync');
+
     const semesters: Semester[] = Object
       .entries(await firstValueFrom(this.loadSemesters()))
       .map(([name, id]) => ({name, id}));
@@ -85,25 +122,24 @@ export class DataService {
 
         for (const group of groups) {
           const subjects: Subject[] = await firstValueFrom(this.loadSubjects(group.id));
-          for (const subject of subjects) {
-            const key = new Date(new Date(subject.from * 1000).toDateString()).valueOf(); // Date without time
+          const json = JSON.stringify(subjects);
+          const compressed = LZ.compress(json);
+          localStorage.setItem(`G-${group.id}`, compressed);
 
-            if (!this.subjects.has(key)) {
-              this.subjects.set(key, []);
-            }
-
-            this.subjects.get(key)!.push(subject);
-          }
+          // for (const subject of subjects) {
+          //   const key = new Date(new Date(subject.from * 1000).toDateString()).valueOf(); // Date without time
+          //
+          //   if (!this.subjects.has(key)) {
+          //     this.subjects.set(key, []);
+          //   }
+          //
+          //   this.subjects.get(key)!.push(subject);
+          // }
         }
       }
     }
 
-    const json = JSON.stringify(Array.from(this.subjects.entries()));
-    console.log(json);
-    const compressed = LZ.compress(json);
-    console.log(compressed)
-    const parsed = new Map(JSON.parse(json));
-    console.log(parsed)
+    console.timeEnd('sync');
   }
 
   public loadSemesters(): Observable<Record<string, string>> {

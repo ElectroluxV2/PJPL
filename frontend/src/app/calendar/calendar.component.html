@@ -12,6 +12,6 @@
   <article class="month" *ngFor="let month of months">
     <span class="label">{{ month.name }} {{ month.year }}</span>
     <span *ngIf="month.offset" style="grid-column: 1 / span {{ month.offset }}"></span>
-    <a matRipple [routerLink]="['/today', month.year, day.index]" class="day" *ngFor="let day of month.days">{{ day.index + 1 }}</a>
+    <a matRipple [routerLink]="['/today', month.year, month.index, day.index]" class="day" [ngClass]="day.color" *ngFor="let day of month.days">{{ day.index + 1 }}</a>
   </article>
 </section>

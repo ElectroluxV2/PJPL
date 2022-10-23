@@ -1,4 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {DataService, Subject} from "../services/data.service";
 
 interface Day {
   index: number;
@@ -9,6 +10,7 @@ interface Month {
   name: string;
   offset: number;
   year: number;
+  index: number;
   days: Day[];
 }
 
@@ -24,22 +26,29 @@ interface ViewRange {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CalendarComponent {
-  public readonly months: Month[];
+  public months: Month[] = [];
 
-  constructor() {
+  constructor(public readonly dataService: DataService) {
+    this.dataService.subjects$.subscribe(subjects => this.makeCalendar(subjects));
+  }
+
+  private makeCalendar(subjects: Map<number, Subject[]>): void {
     this.months = [];
 
+    const formatter = new Intl.DateTimeFormat('pl', {month: 'long'});
+
+    const beginDate = new Date(this.dataService.begin);
+    const endDate = new Date(this.dataService.end);
+
     const begin: ViewRange = {
-      year: 2022,
-      month: 8
+      year: beginDate.getFullYear(),
+      month: beginDate.getMonth()
     };
 
     const end: ViewRange = {
-      year: 2023,
-      month: 5
+      year: endDate.getFullYear(),
+      month: endDate.getMonth()
     };
-
-    const formatter = new Intl.DateTimeFormat('pl', {month: 'long'});
 
     for (let year = begin.year; year <= end.year; year++) {
       const beginMonth = year === begin.year ? begin.month : 0;
@@ -55,11 +64,12 @@ export class CalendarComponent {
           name: formatter.format(lastDayInMonth),
           offset: monthOffset,
           year,
+          index: month,
           days: Array
             .from({length: daysInMonth})
             .map((value, index) => ({
               index,
-              color: 'red'
+              color: subjects.has(new Date(year, month, index).valueOf()) ? 'red' : 'none'
             }))
         })
       }
