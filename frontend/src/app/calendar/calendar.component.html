@@ -8,14 +8,13 @@
   <h2>N</h2>
 </section>
 
-<section class="calendar">
+<section class="calendar" appScrollToCurrent>
   <article class="month" *ngFor="let month of months">
     <span class="label">{{ month.name }} {{ month.year }}</span>
     <span *ngIf="month.offset" style="grid-column: 1 / span {{ month.offset }}"></span>
     <ng-container *ngFor="let day of month.days">
-      <a matRipple *ngIf="day.color === 'red'" [routerLink]="['/today', month.year, month.index, day.index]" class="day" [ngClass]="day.color" >{{ day.index }}</a>
-      <span matRipple *ngIf="day.color !== 'red'" class="day">{{ day.index }}</span>
+      <a matRipple *ngIf="day.color === 'red'" [routerLink]="['/today', month.year, month.index, day.index]" class="day" [attr.current]="day.current ? '' : null" [ngClass]="day.color" >{{ day.index }}</a>
+      <span matRipple *ngIf="day.color !== 'red'" class="day" [attr.current]="day.current ? '' : null">{{ day.index }}</span>
     </ng-container>
-
   </article>
 </section>

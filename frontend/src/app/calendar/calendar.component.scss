@@ -57,6 +57,10 @@
         text-decoration: none;
         font-size: 5vw;
 
+        &[current] {
+          background-color: darkgoldenrod;
+        }
+
         &.red {
           border-color: red;
         }

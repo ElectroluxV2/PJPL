@@ -1,9 +1,10 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {AfterViewChecked, ChangeDetectionStrategy, Component} from '@angular/core';
 import {DataService, Subject} from "../services/data.service";
 
 interface Day {
   index: number;
   color: string;
+  current: boolean;
 }
 
 interface Month {
@@ -50,6 +51,8 @@ export class CalendarComponent {
       month: endDate.getMonth()
     };
 
+    const now = new Date(Date.now());
+
     for (let year = begin.year; year <= end.year; year++) {
       const beginMonth = year === begin.year ? begin.month : 0;
       const endMonth = year === end.year ? end.month : 11;
@@ -69,7 +72,8 @@ export class CalendarComponent {
             .from({length: daysInMonth})
             .map((value, index) => ({
               index: index + 1,
-              color: subjects.has(new Date(year, month, index + 1).valueOf()) ? 'red' : 'none'
+              color: subjects.has(new Date(year, month, index + 1).valueOf()) ? 'red' : 'none',
+              current: now.getDate() === index + 1 && now.getMonth() === month && now.getFullYear() === year
             }))
         })
       }

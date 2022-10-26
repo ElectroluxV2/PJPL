@@ -22,6 +22,7 @@ import {MatCardModule} from "@angular/material/card";
 import {registerLocaleData} from "@angular/common";
 import localePl from '@angular/common/locales/pl';
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
+import { ScrollToCurrentDirective } from './scroll-to-current.directive';
 
 registerLocaleData(localePl);
 
@@ -31,7 +32,8 @@ registerLocaleData(localePl);
     CalendarComponent,
     TodayComponent,
     SettingsComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    ScrollToCurrentDirective
   ],
     imports: [
         BrowserModule,
