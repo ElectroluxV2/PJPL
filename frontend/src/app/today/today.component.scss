@@ -10,3 +10,7 @@
     overflow-y: auto;
   }
 }
+
+mat-list-item[current] {
+  background-color: darkgoldenrod;
+}

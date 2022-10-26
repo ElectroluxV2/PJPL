@@ -7,7 +7,7 @@ import {BehaviorSubject} from "rxjs";
 
 interface Day {
   timestamp: number;
-  subjects: Subject[];
+  subjects?: (Subject & {current?: boolean})[];
 }
 
 @Component({
@@ -54,9 +54,32 @@ export class TodayComponent {
 
   private makeDay(dateWithoutTime: Date): Day {
     const timestamp = dateWithoutTime.valueOf();
+
+    const subjects = this.dataService.subjects$.value.get(timestamp);
+
+    if (!subjects) {
+      return {
+        timestamp,
+        subjects
+      }
+    }
+
+    const now = new Date(Date.now());
+
+    const withDiffs = subjects.map(s => ({
+      ...s,
+      diff: Math.min(Math.abs(s.from * 1000 - now.valueOf()), Math.abs(s.to * 1000 - now.valueOf()))
+    }));
+
+    withDiffs.sort((a, b) => a.diff - b.diff);
+    const min = withDiffs[0].diff;
+
     return {
       timestamp,
-      subjects: this.dataService.subjects$.value.get(timestamp)!
+      subjects: withDiffs.map(subject => ({
+        ...subject,
+        current: subject.diff === min && dateWithoutTime.getDate() === now.getDate() && dateWithoutTime.getFullYear() === now.getFullYear() && dateWithoutTime.getMonth() === now.getMonth()
+      }))
     };
   }
 

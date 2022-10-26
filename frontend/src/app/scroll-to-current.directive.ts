@@ -21,7 +21,7 @@ export class ScrollToCurrentDirective implements OnInit, OnDestroy {
   }
 
   private scrollToCurrent() {
-    const current = document.querySelector('.day[current]');
+    const current = document.querySelector('[current]');
     current?.scrollIntoView({
       block: "center"
     });
