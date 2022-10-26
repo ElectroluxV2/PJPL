@@ -2,6 +2,13 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {DataService, Subject} from "../services/data.service";
 import {ActivatedRoute, ParamMap} from "@angular/router";
 import {combineLatest} from "rxjs/internal/observable/combineLatest";
+import {IInfiniteScrollEvent} from "ngx-infinite-scroll";
+import {BehaviorSubject} from "rxjs";
+
+interface Day {
+  index: number;
+  subjects: Subject[];
+}
 
 @Component({
   selector: 'app-today',
@@ -10,13 +17,16 @@ import {combineLatest} from "rxjs/internal/observable/combineLatest";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodayComponent {
-  public subjects: Subject[] = [];
+  public readonly days = new BehaviorSubject<Day[]>([]);
 
   constructor(private readonly dataService: DataService, readonly route: ActivatedRoute) {
     combineLatest([route.paramMap, dataService.subjects$]).subscribe(([paramMap, subjects]) => this.loadDay(paramMap, subjects));
   }
 
   private loadDay(paramMap: ParamMap, subjectsMap: Map<number, Subject[]>) {
+
+    console.log(paramMap)
+
     if (!paramMap.has('year')) {
       // Tu kiedyś dziś
       return;
@@ -28,12 +38,23 @@ export class TodayComponent {
       Number(paramMap.get('day'))
     );
 
-    this.subjects = subjectsMap.get(dayKey)!;
+    const subjects = subjectsMap.get(dayKey)!;
 
-    console.log(this.subjects)
+    this.days.next([{
+      index: 0,
+      subjects
+    }]);
   }
 
   iterate(additionalData: Record<string, string>) {
     return Object.entries(additionalData);
+  }
+
+  onScrollDown(event: IInfiniteScrollEvent) {
+    console.log(event);
+  }
+
+  onScrollUp(event: IInfiniteScrollEvent) {
+    console.log(event);
   }
 }

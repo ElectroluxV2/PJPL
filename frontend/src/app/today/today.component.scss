@@ -4,6 +4,9 @@
 }
 
 :host {
-  height: 100%;
-  overflow-y: scroll;
+  min-height: 1px;
+  mat-list {
+    height: 100%;
+    overflow-y: auto;
+  }
 }

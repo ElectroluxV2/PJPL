@@ -21,6 +21,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatCardModule} from "@angular/material/card";
 import {registerLocaleData} from "@angular/common";
 import localePl from '@angular/common/locales/pl';
+import {InfiniteScrollModule} from "ngx-infinite-scroll";
 
 registerLocaleData(localePl);
 
@@ -54,6 +55,7 @@ registerLocaleData(localePl);
         ReactiveFormsModule,
         FormsModule,
         MatCardModule,
+        InfiniteScrollModule,
     ],
   providers: [{
     provide: LOCALE_ID,
