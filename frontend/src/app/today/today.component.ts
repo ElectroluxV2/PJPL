@@ -1,12 +1,14 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {DataService, Subject} from "../services/data.service";
 import {ActivatedRoute, ParamMap} from "@angular/router";
 import {combineLatest} from "rxjs/internal/observable/combineLatest";
 import {IInfiniteScrollEvent} from "ngx-infinite-scroll";
 import {BehaviorSubject} from "rxjs";
+import {MatList} from "@angular/material/list";
 
 interface Day {
   timestamp: number;
+  current?: boolean;
   subjects?: (Subject & {current?: boolean})[];
 }
 
@@ -17,6 +19,7 @@ interface Day {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodayComponent {
+  @ViewChild('list', {read: ViewContainerRef}) list?: ViewContainerRef;
   private readonly daysSource: Day[] = [];
   public readonly days = new BehaviorSubject<Day[]>(this.daysSource);
 
@@ -37,7 +40,7 @@ export class TodayComponent {
     return new Date(copy.setDate(copy.getDate() + 1));
   }
 
-  private loadDay(paramMap: ParamMap, subjectsMap: Map<number, Subject[]>) {
+  private loadDay(paramMap: ParamMap, subjectsMap: Map<number, Subject[]>): void {
     const now = new Date(Date.now())
     const requestedDateWithoutTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
@@ -48,6 +51,11 @@ export class TodayComponent {
     }
 
     this.appendDay(requestedDateWithoutTime);
+    setTimeout(this.loadMoreDays.bind(this, requestedDateWithoutTime), 0);
+  }
+
+  private loadMoreDays(requestedDateWithoutTime: Date): void {
+    this.list!.element.nativeElement.scrollTo(0, 1); // Auto scroll happen only when stick to top
     this.prependDay(this.prevDate(requestedDateWithoutTime));
     this.appendDay(this.nextDate(requestedDateWithoutTime));
   }
