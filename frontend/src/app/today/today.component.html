@@ -5,6 +5,11 @@
   [scrollWindow]="false"
 >
   <ng-container *ngFor="let day of days | async">
+    <ng-container *ngIf="!day.subjects">
+      <mat-list-item>
+        No data for {{ day.timestamp | date: 'MMM d, y': '': 'pl-PL' }}
+      </mat-list-item>
+    </ng-container>
     <ng-container *ngFor="let subject of day.subjects">
       <mat-list-item class="subject" mat-ripple>
         <mat-label mat-line>Sala: {{ subject.room }}</mat-label>

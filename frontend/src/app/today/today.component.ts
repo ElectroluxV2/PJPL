@@ -6,7 +6,7 @@ import {IInfiniteScrollEvent} from "ngx-infinite-scroll";
 import {BehaviorSubject} from "rxjs";
 
 interface Day {
-  index: number;
+  timestamp: number;
   subjects: Subject[];
 }
 
@@ -17,44 +17,70 @@ interface Day {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodayComponent {
-  public readonly days = new BehaviorSubject<Day[]>([]);
+  private readonly daysSource: Day[] = [];
+  public readonly days = new BehaviorSubject<Day[]>(this.daysSource);
+
+  private prependedDate!: Date;
+  private appendedDate!: Date;
 
   constructor(private readonly dataService: DataService, readonly route: ActivatedRoute) {
     combineLatest([route.paramMap, dataService.subjects$]).subscribe(([paramMap, subjects]) => this.loadDay(paramMap, subjects));
   }
 
-  private loadDay(paramMap: ParamMap, subjectsMap: Map<number, Subject[]>) {
-
-    console.log(paramMap)
-
-    if (!paramMap.has('year')) {
-      // Tu kiedyś dziś
-      return;
-    }
-
-    const dayKey = this.dataService.makeKey(
-      Number(paramMap.get('year')),
-      Number(paramMap.get('month')),
-      Number(paramMap.get('day'))
-    );
-
-    const subjects = subjectsMap.get(dayKey)!;
-
-    this.days.next([{
-      index: 0,
-      subjects
-    }]);
+  private prevDate(date: Date): Date {
+    const copy = new Date(date.valueOf());
+    return new Date(copy.setDate(copy.getDate() - 1));
   }
 
-  iterate(additionalData: Record<string, string>) {
+  private nextDate(date: Date): Date {
+    const copy = new Date(date.valueOf());
+    return new Date(copy.setDate(copy.getDate() + 1));
+  }
+
+  private loadDay(paramMap: ParamMap, subjectsMap: Map<number, Subject[]>) {
+    const now = new Date(Date.now())
+    const requestedDateWithoutTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    if (paramMap.has('year')) {
+      requestedDateWithoutTime.setFullYear(Number(paramMap.get('year')));
+      requestedDateWithoutTime.setMonth(Number(paramMap.get('month')));
+      requestedDateWithoutTime.setDate(Number(paramMap.get('day')));
+    }
+
+    this.appendDay(requestedDateWithoutTime);
+    this.prependDay(this.prevDate(requestedDateWithoutTime));
+    this.appendDay(this.nextDate(requestedDateWithoutTime));
+  }
+
+  private makeDay(dateWithoutTime: Date): Day {
+    const timestamp = dateWithoutTime.valueOf();
+    return {
+      timestamp,
+      subjects: this.dataService.subjects$.value.get(timestamp)!
+    };
+  }
+
+  private appendDay(dateWithoutTime: Date): void {
+    this.appendedDate = dateWithoutTime;
+    this.daysSource.push(this.makeDay(dateWithoutTime));
+    this.days.next(this.daysSource);
+  }
+
+  private prependDay(dateWithoutTime: Date): void {
+    this.prependedDate = dateWithoutTime;
+    this.daysSource.unshift(this.makeDay(dateWithoutTime));
+    this.days.next(this.daysSource);
+  }
+
+  public iterate(additionalData: Record<string, string>): [string, string][] {
     return Object.entries(additionalData);
   }
 
-  onScrollDown(event: IInfiniteScrollEvent) {
-    console.log(event);
+  public onScrollDown(event: IInfiniteScrollEvent): void {
+    this.appendDay(this.nextDate(this.appendedDate));
   }
 
-  onScrollUp(event: IInfiniteScrollEvent) {
-    console.log(event);
+  public onScrollUp(event: IInfiniteScrollEvent): void {
+    this.prependDay(this.prevDate(this.prependedDate));
   }
 }
