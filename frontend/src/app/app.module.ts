@@ -23,6 +23,9 @@ import {registerLocaleData} from "@angular/common";
 import localePl from '@angular/common/locales/pl';
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import { ScrollToCurrentDirective } from './scroll-to-current.directive';
+import {MatChipsModule} from "@angular/material/chips";
+import { GroupChooserComponent } from './settings/group-chooser/group-chooser.component';
+import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
 
 registerLocaleData(localePl);
 
@@ -33,32 +36,35 @@ registerLocaleData(localePl);
     TodayComponent,
     SettingsComponent,
     NotFoundComponent,
-    ScrollToCurrentDirective
+    ScrollToCurrentDirective,
+    GroupChooserComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        ServiceWorkerModule.register('ngsw-worker.js', {
-            enabled: environment.production,
-            // Register the ServiceWorker as soon as the application is stable
-            // or after 30 seconds (whichever comes first).
-            registrationStrategy: 'registerWhenStable:30000'
-        }),
-        BrowserAnimationsModule,
-        HttpClientModule,
-        MatToolbarModule,
-        MatIconModule,
-        MatButtonModule,
-        MatLineModule,
-        MatRippleModule,
-        MatListModule,
-        MatFormFieldModule,
-        MatSelectModule,
-        ReactiveFormsModule,
-        FormsModule,
-        MatCardModule,
-        InfiniteScrollModule,
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
+    BrowserAnimationsModule,
+    HttpClientModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatLineModule,
+    MatRippleModule,
+    MatListModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatCardModule,
+    InfiniteScrollModule,
+    MatChipsModule,
+    MatBottomSheetModule
+  ],
   providers: [{
     provide: LOCALE_ID,
     useValue: 'pl-PL'

@@ -1,6 +1,8 @@
 import {ChangeDetectionStrategy, Component, OnDestroy} from '@angular/core';
-import {MatOptionSelectionChange} from "@angular/material/core";
 import {DataService} from "../services/data.service";
+import {MatBottomSheet} from "@angular/material/bottom-sheet";
+import {GroupChooserComponent} from "./group-chooser/group-chooser.component";
+import {GroupService} from "../services/group.service";
 
 @Component({
   selector: 'app-settings',
@@ -10,37 +12,18 @@ import {DataService} from "../services/data.service";
 })
 export class SettingsComponent implements OnDestroy {
   private alive = true;
-  public readonly selectedSemestersIds = Array.from(this.dataService.selectedSemestersIds);
-  public readonly selectedStudiesIds = Array.from(this.dataService.selectedStudiesIds);
-  public readonly selectedGroupsIds = Array.from(this.dataService.selectedGroupsIds);
 
-  constructor(public readonly dataService: DataService) { }
+  constructor(
+    public readonly dataService: DataService,
+    public readonly groupService: GroupService,
+    private readonly matBottomSheet: MatBottomSheet
+  ) { }
 
   public ngOnDestroy(): void {
     this.alive = false;
   }
 
-  public onSemesterSelectionChange({ source: { selected, value: semesterId } }: MatOptionSelectionChange<string>): void {
-    if (selected) {
-      this.dataService.selectedSemestersIds.add(semesterId);
-    } else {
-      this.dataService.selectedSemestersIds.delete(semesterId);
-    }
-  }
-
-  public onStudySelectionChange({ source: { selected, value: studyId } }: MatOptionSelectionChange<string>): void {
-    if (selected) {
-      this.dataService.selectedStudiesIds.add(studyId);
-    } else {
-      this.dataService.selectedStudiesIds.delete(studyId);
-    }
-  }
-
-  public onGroupSelectionChange({ source: { selected, value: groupId } }: MatOptionSelectionChange<string>): void {
-    if (selected) {
-      this.dataService.selectedGroupsIds.add(groupId);
-    } else {
-      this.dataService.selectedGroupsIds.delete(groupId);
-    }
+  public openGroupChooser(): void {
+    this.matBottomSheet.open(GroupChooserComponent);
   }
 }

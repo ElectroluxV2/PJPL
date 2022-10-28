@@ -31,23 +31,12 @@ export type Semester = IndexItem;
 export type Study = IndexItem;
 export type Group = IndexItem;
 
-export interface Grouped<T> {
-  name: string;
-  items: T[];
-}
-
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
   private static readonly API = "//s2.budziszm.pl/data";
-  public readonly availableSemesters: Semester[] = [];
-  public readonly selectedSemestersIds = new Set<string>();
-  public readonly availableStudies: Grouped<Study>[] = [];
-  public readonly selectedStudiesIds = new Set<string>();
-  public readonly availableGroups: Grouped<Group>[] = [];
-  public readonly selectedGroupsIds = new Set<string>();
   private readonly subjects = new Map<number, Subject[]>();
   public readonly subjects$ = new BehaviorSubject<Map<number, Subject[]>>(new Map());
   public begin: number = Number.MAX_VALUE;
@@ -91,55 +80,55 @@ export class DataService {
   }
 
   private async sync(): Promise<void> {
-    console.log('Sync start')
-    console.time('sync');
-
-    const semesters: Semester[] = Object
-      .entries(await firstValueFrom(this.loadSemesters()))
-      .map(([name, id]) => ({name, id}));
-
-    this.availableSemesters.push(...semesters);
-
-    for (const semester of semesters) {
-      const studies: Study[] = Object
-        .entries(await firstValueFrom(this.loadStudies(semester.id)))
-        .map(([name, id]) => ({name, id: `${semester.id}/${id}`}));
-
-      this.availableStudies.push({
-        name: semester.name,
-        items: studies
-      });
-
-      for (const study of studies) {
-        const groups: Group[] = Object
-          .entries(await firstValueFrom(this.loadGroups(study.id)))
-          .map(([name, id]) => ({name, id: `${study.id}/${id}`}));
-
-        this.availableGroups.push({
-          name: `${semester.name} - ${study.name}`,
-          items: groups
-        });
-
-        for (const group of groups) {
-          const subjects: Subject[] = await firstValueFrom(this.loadSubjects(group.id));
-          const json = JSON.stringify(subjects);
-          const compressed = LZ.compress(json);
-          localStorage.setItem(`G-${group.id}`, compressed);
-
-          // for (const subject of subjects) {
-          //   const key = new Date(new Date(subject.from * 1000).toDateString()).valueOf(); // Date without time
-          //
-          //   if (!this.subjects.has(key)) {
-          //     this.subjects.set(key, []);
-          //   }
-          //
-          //   this.subjects.get(key)!.push(subject);
-          // }
-        }
-      }
-    }
-
-    console.timeEnd('sync');
+    // console.log('Sync start')
+    // console.time('sync');
+    //
+    // const semesters: Semester[] = Object
+    //   .entries(await firstValueFrom(this.loadSemesters()))
+    //   .map(([name, id]) => ({name, id}));
+    //
+    // this.availableSemesters.push(...semesters);
+    //
+    // for (const semester of semesters) {
+    //   const studies: Study[] = Object
+    //     .entries(await firstValueFrom(this.loadStudies(semester.id)))
+    //     .map(([name, id]) => ({name, id: `${semester.id}/${id}`}));
+    //
+    //   this.availableStudies.push({
+    //     name: semester.name,
+    //     items: studies
+    //   });
+    //
+    //   for (const study of studies) {
+    //     const groups: Group[] = Object
+    //       .entries(await firstValueFrom(this.loadGroups(study.id)))
+    //       .map(([name, id]) => ({name, id: `${study.id}/${id}`}));
+    //
+    //     this.availableGroups.push({
+    //       name: `${semester.name} - ${study.name}`,
+    //       items: groups
+    //     });
+    //
+    //     for (const group of groups) {
+    //       const subjects: Subject[] = await firstValueFrom(this.loadSubjects(group.id));
+    //       const json = JSON.stringify(subjects);
+    //       const compressed = LZ.compress(json);
+    //       localStorage.setItem(`G-${group.id}`, compressed);
+    //
+    //       // for (const subject of subjects) {
+    //       //   const key = new Date(new Date(subject.from * 1000).toDateString()).valueOf(); // Date without time
+    //       //
+    //       //   if (!this.subjects.has(key)) {
+    //       //     this.subjects.set(key, []);
+    //       //   }
+    //       //
+    //       //   this.subjects.get(key)!.push(subject);
+    //       // }
+    //     }
+    //   }
+    // }
+    //
+    // console.timeEnd('sync');
   }
 
   public loadSemesters(): Observable<Record<string, string>> {
