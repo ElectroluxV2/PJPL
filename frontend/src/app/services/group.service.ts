@@ -56,10 +56,12 @@ export class GroupService {
 
   public selectGroup(id: string, name: string): void {
     this.selectedGroups.set(id, name);
+    console.log(id)
     this.selectedGroups$.next(Array.from(this.selectedGroups.entries()).map(([id, name]) => ({id, name})));
   }
 
   public removeGroup(id: string): void {
+    console.log(id)
     this.selectedGroups.delete(id);
     this.selectedGroups$.next(Array.from(this.selectedGroups.entries()).map(([id, name]) => ({id, name})));
   }
@@ -68,8 +70,8 @@ export class GroupService {
     return this.selectedGroups.has(groupId);
   }
 
-  public getGroups(studiesIds: string[]): GroupWithMetadata[] {
-    return Array.of(studiesIds.map(id => this.availableGroups.get(id)!)).flat(2).sort((a, b) => a.name.localeCompare(b.name));
+  public getGroups(studyId: string): GroupWithMetadata[] {
+    return this.availableGroups.get(studyId)!.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   public toggle(group: Group): void {

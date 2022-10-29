@@ -12,9 +12,9 @@ import {MatBottomSheetRef} from "@angular/material/bottom-sheet";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GroupChooserComponent {
-  public readonly selectedSemestersIds$ = new BehaviorSubject<string[]>([]);
+  public readonly selectedSemestersId$ = new ReplaySubject<string>(1);
   public readonly filteredStudies$ = new ReplaySubject<Study[]>(1);
-  public readonly selectedStudiesIds$ = new BehaviorSubject<string[]>([]);
+  public readonly selectedStudyId$ = new ReplaySubject<string>(1);
   public readonly filteredGroups$ = new ReplaySubject<GroupWithMetadata[]>(1);
 
 
@@ -28,29 +28,21 @@ export class GroupChooserComponent {
   }
 
   public onSemesterSelectionChange({ source: { selected, value } }: MatOptionSelectionChange<string>): void {
-    const ids = this.selectedSemestersIds$.value;
-
     if (!selected) {
-      this.selectedSemestersIds$.next(ids.filter(id => id !== value));
-    } else {
-      this.selectedSemestersIds$.next(ids.concat(value));
+      return;
     }
 
-    const filtered = this.groupService.availableStudies$.value.filter(s => this.selectedSemestersIds$.value.some(x => s.id.includes(x)));
-    this.filteredStudies$.next(filtered);
     this.filteredGroups$.next([]);
+    this.selectedSemestersId$.next(value);
+    this.filteredStudies$.next(this.groupService.availableStudies$.value.filter(s => s.id.includes(value)));
   }
 
   public onStudySelectionChange({ source: { selected, value } }: MatOptionSelectionChange<string>): void {
-    const ids = this.selectedStudiesIds$.value;
-
     if (!selected) {
-      this.selectedStudiesIds$.next(ids.filter(id => id !== value));
-    } else {
-      this.selectedStudiesIds$.next(ids.concat(value));
+      return;
     }
 
-    const filtered: GroupWithMetadata[] = this.groupService.getGroups(this.selectedStudiesIds$.value);
-    this.filteredGroups$.next(filtered);
+    this.selectedStudyId$.next(value);
+    this.filteredGroups$.next(this.groupService.getGroups(value));
   }
 }
