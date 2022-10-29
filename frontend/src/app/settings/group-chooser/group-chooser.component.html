@@ -1,2 +1,39 @@
-<p>group-chooser works!</p>
-<button (click)="add()">+++</button>
+<button mat-icon-button (click)="close()">
+  <mat-icon>close</mat-icon>
+</button>
+<mat-list>
+  <mat-list-item>
+    <mat-form-field appearance="outline">
+      <mat-label>Semestr</mat-label>
+      <mat-select [value]="selectedSemestersIds$">
+        <mat-option
+          *ngFor="let semester of groupService.availableSemesters$ | async"
+          [value]="semester.id"
+          (onSelectionChange)="onSemesterSelectionChange($event)"
+        >{{ semester.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-list-item>
+  <mat-list-item *ngIf="filteredStudies$ | async">
+    <mat-form-field appearance="outline">
+      <mat-label>Studia</mat-label>
+      <mat-select [value]="selectedSemestersIds$">
+        <mat-option
+          *ngFor="let study of filteredStudies$ | async"
+          [value]="study.id"
+          (onSelectionChange)="onStudySelectionChange($event)"
+        >{{ study.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-list-item>
+  <mat-list-item *ngIf="filteredGroups$ | async">
+    <mat-chip-list>
+      <mat-chip
+        *ngFor="let group of filteredGroups$ | async"
+        [color]="groupService.isSelected(group.id) ? 'accent' : 'primary'"
+        selected
+        (click)="groupService.toggle(group)"
+      >{{ group.name }}</mat-chip>
+    </mat-chip-list>
+  </mat-list-item>
+</mat-list>
