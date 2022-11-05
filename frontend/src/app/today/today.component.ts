@@ -1,10 +1,9 @@
-import {ChangeDetectionStrategy, Component, ElementRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ViewChild, ViewContainerRef} from '@angular/core';
 import {DataService} from "../services/data.service";
 import {ActivatedRoute, ParamMap} from "@angular/router";
 import {combineLatest} from "rxjs/internal/observable/combineLatest";
 import {IInfiniteScrollEvent} from "ngx-infinite-scroll";
 import {BehaviorSubject} from "rxjs";
-import {MatList} from "@angular/material/list";
 import {Subject} from "../services/api.service";
 
 interface Day {

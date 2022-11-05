@@ -1,8 +1,7 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {BehaviorSubject, first, firstValueFrom, map, Observable, skip} from "rxjs";
+import {BehaviorSubject, firstValueFrom} from "rxjs";
 import * as LZ from 'lz-string';
-import {ApiService, IndexItem, Subject} from "./api.service";
+import {ApiService, Subject} from "./api.service";
 import {GroupService} from "./group.service";
 
 export interface GroupSyncInfo {

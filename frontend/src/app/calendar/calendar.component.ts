@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {DataService} from "../services/data.service";
 import {Subject} from "../services/api.service";
-import {debounceTime, throttleTime} from "rxjs";
+import {throttleTime} from "rxjs";
 
 interface Day {
   index: number;

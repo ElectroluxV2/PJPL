@@ -1,9 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {MatButton} from "@angular/material/button";
-import {ActivatedRoute, NavigationEnd, Router, RouterEvent} from "@angular/router";
-import {combineLatest} from "rxjs/internal/observable/combineLatest";
-import {filter, map, of, tap, withLatestFrom} from "rxjs";
-import * as events from "events";
+import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
+import {filter, map, tap} from "rxjs";
 
 @Component({
   selector: 'app-root',
