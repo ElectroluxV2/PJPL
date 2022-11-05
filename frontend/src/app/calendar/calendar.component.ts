@@ -61,7 +61,7 @@ export class CalendarComponent {
 
       for (let month = beginMonth; month <= endMonth; month++) {
         const firstDayInMonth = new Date(year, month, 1);
-        const monthOffset = firstDayInMonth.getDay() - 1;
+        const monthOffset =  (firstDayInMonth.getDay() + 6) % 7;
         const lastDayInMonth = new Date(year, month + 1, 0);
         const daysInMonth = lastDayInMonth.getDate();
 
