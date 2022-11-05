@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {DataService} from "../services/data.service";
 import {Subject} from "../services/api.service";
+import {debounceTime, throttleTime} from "rxjs";
 
 interface Day {
   index: number;
@@ -32,7 +33,9 @@ export class CalendarComponent {
 
   constructor(public readonly dataService: DataService) {
     // TODO: Fix memory leak (subscribe)
-    this.dataService.subjects$.subscribe(subjects => this.makeCalendar(subjects));
+    this.dataService.subjects$
+      .pipe(throttleTime(100))
+      .subscribe(subjects => this.makeCalendar(subjects));
   }
 
   private makeCalendar(subjects: Map<number, Subject[]>): void {
