@@ -2,47 +2,20 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, firstValueFrom, map, Observable} from "rxjs";
 import * as LZ from 'lz-string';
-
-interface Event {
-  from: number;
-  to: number;
-  room: string;
-  location: string;
-  groups: string[];
-  color: string;
-  additionalData: Record<string, string>;
-}
-
-interface Metadata {
-  updated: number;
-  study: string;
-  name: string;
-  semester: string;
-}
-
-export type Subject = Event & Metadata;
-
-export interface IndexItem {
-  name: string;
-  id: string;
-}
-
-export type Semester = IndexItem;
-export type Study = IndexItem;
-export type Group = IndexItem;
+import {Subject} from "./api.service";
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  private static readonly API = "//s2.budziszm.pl/data";
   private readonly subjects = new Map<number, Subject[]>();
   public readonly subjects$ = new BehaviorSubject<Map<number, Subject[]>>(new Map());
-  public begin: number = Number.MAX_VALUE;
-  public end: number = 0;
 
-  constructor(private readonly http: HttpClient) {
+  public firstValuableDay: number = Number.MAX_VALUE;
+  public lastValuableDay: number = 0;
+
+  constructor() {
     // this.sync().then(() => );
     this.load();
 
@@ -69,8 +42,8 @@ export class DataService {
 
         this.subjects.get(timestamp)!.push(subject);
 
-        this.begin = Math.min(this.begin, timestamp);
-        this.end = Math.max(this.end, timestamp);
+        this.firstValuableDay = Math.min(this.firstValuableDay, timestamp);
+        this.lastValuableDay = Math.max(this.lastValuableDay, timestamp);
       }
     }
 
@@ -129,41 +102,5 @@ export class DataService {
     // }
     //
     // console.timeEnd('sync');
-  }
-
-  public loadSemesters(): Observable<Record<string, string>> {
-    return this.getIndex('semesters');
-  }
-
-  public loadStudies(semesterId: string): Observable<Record<string, string>> {
-    return this.getIndex(`${semesterId}/studies`);
-  }
-
-  public loadGroups(studyId: string): Observable<Record<string, string>> {
-    return this.getIndex(`${studyId}/groups`);
-  }
-
-  public loadSubjects(groupId: string): Observable<Subject[]> {
-    return this.get<Metadata & { subjects: Event[] }>(`${groupId}.json`).pipe(
-      map(response => !response ? [] : response.subjects.map(event => ({
-        ...event,
-        updated: response.updated,
-        study: response.study,
-        name: response.name,
-        semester: response.semester
-      })))
-    );
-  }
-
-  private getIndex(path: string): Observable<Record<string, string>> {
-    return this.get(`${path}.json`);
-  }
-
-  private get<T>(endpoint: string): Observable<T> {
-    return this.http.get<T>(`${DataService.API}/${endpoint}`);
-  }
-
-  public makeKey(year: number, month: number, day: number): number {
-    return new Date(year, month, day).valueOf();
   }
 }

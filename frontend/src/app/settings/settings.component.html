@@ -4,7 +4,7 @@
     <mat-chip-list>
       <mat-chip *ngFor="let group of groupService.selectedGroups$ | async">
         {{ group.name }}
-        <mat-icon matChipRemove (click)="groupService.removeGroup(group.id)">cancel</mat-icon>
+        <mat-icon matChipRemove (click)="groupService.deselectGroup(group.id)">cancel</mat-icon>
       </mat-chip>
       <button mat-icon-button color="primary" (click)="openGroupChooser()">
         <mat-icon>add</mat-icon>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, firstValueFrom, Subject} from "rxjs";
-import {DataService, Group, Semester, Study} from "./data.service";
+import {BehaviorSubject, firstValueFrom} from "rxjs";
+import {ApiService, Group, Semester, Study} from "./api.service";
 
 export type GroupWithMetadata = Group & {
   semesterName: string; // semester id is part of group id
@@ -11,19 +11,21 @@ export type GroupWithMetadata = Group & {
   providedIn: 'root'
 })
 export class GroupService {
+  private static readonly selectedGroupsKey = 'selected-groups';
   private readonly selectedGroups = new Map<string, string>();
   public readonly selectedGroups$ = new BehaviorSubject<Group[]>([]);
   public readonly availableSemesters$ = new BehaviorSubject<Semester[]>([]);
   public readonly availableStudies$ = new BehaviorSubject<Study[]>([]);
   private readonly availableGroups = new Map<string, GroupWithMetadata[]>();
 
-  constructor(private readonly dataService: DataService) {
+  constructor(private readonly apiService: ApiService) {
     void this.loadAvailableGroups();
+    void this.loadSavedSelectedGroups();
   }
 
   private async loadAvailableGroups(): Promise<void> {
     const semesters: Semester[] = Object
-      .entries(await firstValueFrom(this.dataService.loadSemesters()))
+      .entries(await firstValueFrom(this.apiService.loadSemesters()))
       .map(([name, id]) => ({name, id}));
 
     this.availableSemesters$.next(semesters);
@@ -32,14 +34,14 @@ export class GroupService {
 
     for (const semester of semesters) {
       const studies: Study[] = Object
-          .entries(await firstValueFrom(this.dataService.loadStudies(semester.id)))
+          .entries(await firstValueFrom(this.apiService.loadStudies(semester.id)))
           .map(([name, id]) => ({name, id: `${semester.id}/${id}`}));
 
       allStudies.push(...studies);
 
       for (const study of studies) {
         const groups: GroupWithMetadata[] = Object
-              .entries(await firstValueFrom(this.dataService.loadGroups(study.id)))
+              .entries(await firstValueFrom(this.apiService.loadGroups(study.id)))
               .map(([name, id]) => ({
                 name,
                 id: `${study.id}/${id}`,
@@ -56,29 +58,41 @@ export class GroupService {
 
   public selectGroup(id: string, name: string): void {
     this.selectedGroups.set(id, name);
-    console.log(id)
-    this.selectedGroups$.next(Array.from(this.selectedGroups.entries()).map(([id, name]) => ({id, name})));
+    const newValue = Array.from(this.selectedGroups.entries()).map(([id, name]) => ({id, name}));
+    this.selectedGroups$.next(newValue);
+    localStorage.setItem(GroupService.selectedGroupsKey, JSON.stringify(newValue));
   }
 
-  public removeGroup(id: string): void {
-    console.log(id)
+  public deselectGroup(id: string): void {
     this.selectedGroups.delete(id);
-    this.selectedGroups$.next(Array.from(this.selectedGroups.entries()).map(([id, name]) => ({id, name})));
+    const newValue = Array.from(this.selectedGroups.entries()).map(([id, name]) => ({id, name}));
+    this.selectedGroups$.next(newValue);
+    localStorage.setItem(GroupService.selectedGroupsKey, JSON.stringify(newValue));
   }
 
-  public isSelected(groupId: string): boolean {
+  public isGroupSelected(groupId: string): boolean {
     return this.selectedGroups.has(groupId);
   }
 
   public getGroups(studyId: string): GroupWithMetadata[] {
-    return this.availableGroups.get(studyId)!.sort((a, b) => a.name.localeCompare(b.name));
+    return this.availableGroups
+      .get(studyId)!
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  public toggle(group: Group): void {
-    if (this.isSelected(group.id)) {
-      this.removeGroup(group.id);
+  public toggleGroupSelection(group: Group): void {
+    if (this.isGroupSelected(group.id)) {
+      this.deselectGroup(group.id);
     } else {
       this.selectGroup(group.id, group.name);
+    }
+  }
+
+  private loadSavedSelectedGroups() {
+    const saved: Group[] = JSON.parse(localStorage.getItem(GroupService.selectedGroupsKey) ?? '[]');
+    this.selectedGroups$.next(saved);
+    for (const {name, id} of saved) {
+      this.selectedGroups.set(id, name);
     }
   }
 }

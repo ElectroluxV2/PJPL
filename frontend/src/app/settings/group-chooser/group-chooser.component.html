@@ -30,9 +30,9 @@
     <mat-chip-list>
       <mat-chip
         *ngFor="let group of filteredGroups$ | async"
-        [color]="groupService.isSelected(group.id) ? 'accent' : 'primary'"
+        [color]="groupService.isGroupSelected(group.id) ? 'accent' : 'primary'"
         selected
-        (click)="groupService.toggle(group)"
+        (click)="groupService.toggleGroupSelection(group)"
       >{{ group.name }}</mat-chip>
     </mat-chip-list>
   </mat-list-item>

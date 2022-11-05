@@ -2,8 +2,8 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {GroupService, GroupWithMetadata} from "../../services/group.service";
 import {MatOptionSelectionChange} from "@angular/material/core";
 import {BehaviorSubject, ReplaySubject} from "rxjs";
-import {Study} from "../../services/data.service";
 import {MatBottomSheetRef} from "@angular/material/bottom-sheet";
+import {Study} from "../../services/api.service";
 
 @Component({
   selector: 'app-group-chooser',

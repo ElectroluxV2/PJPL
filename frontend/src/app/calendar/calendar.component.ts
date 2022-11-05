@@ -1,5 +1,6 @@
-import {AfterViewChecked, ChangeDetectionStrategy, Component} from '@angular/core';
-import {DataService, Subject} from "../services/data.service";
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {DataService} from "../services/data.service";
+import {Subject} from "../services/api.service";
 
 interface Day {
   index: number;
@@ -30,6 +31,7 @@ export class CalendarComponent {
   public months: Month[] = [];
 
   constructor(public readonly dataService: DataService) {
+    // TODO: Fix memory leak (subscribe)
     this.dataService.subjects$.subscribe(subjects => this.makeCalendar(subjects));
   }
 
@@ -38,8 +40,8 @@ export class CalendarComponent {
 
     const formatter = new Intl.DateTimeFormat('pl', {month: 'long'});
 
-    const beginDate = new Date(this.dataService.begin);
-    const endDate = new Date(this.dataService.end);
+    const beginDate = new Date(this.dataService.firstValuableDay);
+    const endDate = new Date(this.dataService.lastValuableDay);
 
     const begin: ViewRange = {
       year: beginDate.getFullYear(),
