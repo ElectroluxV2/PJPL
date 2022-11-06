@@ -74,14 +74,14 @@ public class EventPopout {
         final var date = getDate(getTrimmedText(dateBy));
         final var time = getTime(getTrimmedText(timeToBy));
 
-        return ZonedDateTime.of(date, time, ZoneOffset.UTC/*ZoneId.of("Europe/Warsaw")*/);
+        return ZonedDateTime.of(date, time, ZoneId.of("Europe/Warsaw"));
     }
 
     public ZonedDateTime getFrom() {
         final var date = getDate(getTrimmedText(dateBy));
         final var time = getTime(getTrimmedText(timeFromBy));
 
-        return ZonedDateTime.of(date, time, ZoneOffset.UTC/*ZoneId.of("Europe/Warsaw")*/);
+        return ZonedDateTime.of(date, time, ZoneId.of("Europe/Warsaw"));
     }
 
     private LocalTime getTime(final String time) {
