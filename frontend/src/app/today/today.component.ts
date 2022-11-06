@@ -84,12 +84,17 @@ export class TodayComponent {
 
     withDiffs.sort((a, b) => a.diff - b.diff);
     const min = withDiffs[0].diff;
+    withDiffs.sort((a, b) => a.from - b.from);
 
     return {
       timestamp,
       subjects: withDiffs.map(subject => ({
         ...subject,
-        current: subject.diff === min && dateWithoutTime.getDate() === now.getDate() && dateWithoutTime.getFullYear() === now.getFullYear() && dateWithoutTime.getMonth() === now.getMonth()
+        current:
+          subject.diff === min &&
+          dateWithoutTime.getDate() === now.getDate() &&
+          dateWithoutTime.getFullYear() === now.getFullYear() &&
+          dateWithoutTime.getMonth() === now.getMonth()
       }))
     };
   }
