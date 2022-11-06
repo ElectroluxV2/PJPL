@@ -1,6 +1,7 @@
 <mat-list #list
   infinite-scroll
   appScrollToCurrent
+  [disableScrollToCurrent]="disableScrollToCurrent"
   (scrolled)="onScrollDown($event)"
   (scrolledUp)="onScrollUp($event)"
   [scrollWindow]="false"

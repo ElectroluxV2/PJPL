@@ -1,9 +1,10 @@
-import {Directive, ElementRef, OnDestroy, OnInit} from '@angular/core';
+import {Directive, ElementRef, Input, OnDestroy, OnInit} from '@angular/core';
 
 @Directive({
   selector: '[appScrollToCurrent]'
 })
 export class ScrollToCurrentDirective implements OnInit, OnDestroy {
+  @Input() disableScrollToCurrent = false;
   private observer = new MutationObserver(() => {
     this.scrollToCurrent();
   });
@@ -22,6 +23,14 @@ export class ScrollToCurrentDirective implements OnInit, OnDestroy {
 
   private scrollToCurrent() {
     const current = document.querySelector('[current]');
+
+    if (!current) {
+      return;
+    }
+    if (this.disableScrollToCurrent) {
+      return;
+    }
+
     current?.scrollIntoView({
       block: "center"
     });

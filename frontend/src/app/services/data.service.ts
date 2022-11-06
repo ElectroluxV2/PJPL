@@ -37,7 +37,7 @@ export class DataService {
   private async synchronizeGroup(groupId: string): Promise<void> {
     const subjects: Subject[] = await firstValueFrom(this.apiService.loadSubjects(groupId));
     this.putSubjectsInMap(subjects);
-    console.log(`Loaded ${subjects.length} subjects for group ${groupId} from api.`);
+    // console.log(`Loaded ${subjects.length} subjects for group ${groupId} from api.`);
     const json = JSON.stringify(subjects);
     const compressed = LZ.compress(json);
     localStorage.setItem(`G-${groupId}`, compressed);
@@ -52,7 +52,7 @@ export class DataService {
     const compressed = localStorage.getItem(`G-${groupId}`)!;
     const json = LZ.decompress(compressed)!;
     const subjects: Subject[] = JSON.parse(json) ?? [];
-    console.log(`Loaded ${subjects.length} subjects for group ${groupId} from localStorage.`);
+    // console.log(`Loaded ${subjects.length} subjects for group ${groupId} from localStorage.`);
     this.putSubjectsInMap(subjects);
 
     // Load fresh data anyway, used by automated synchronizer

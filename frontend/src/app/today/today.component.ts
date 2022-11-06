@@ -3,7 +3,7 @@ import {DataService} from "../services/data.service";
 import {ActivatedRoute, ParamMap} from "@angular/router";
 import {combineLatest} from "rxjs/internal/observable/combineLatest";
 import {IInfiniteScrollEvent} from "ngx-infinite-scroll";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, throttleTime} from "rxjs";
 import {Subject} from "../services/api.service";
 
 interface Day {
@@ -26,8 +26,11 @@ export class TodayComponent {
   private prependedDate!: Date;
   private appendedDate!: Date;
 
+  public disableScrollToCurrent = false;
+
   constructor(private readonly dataService: DataService, readonly route: ActivatedRoute) {
-    combineLatest([route.paramMap, dataService.subjects$]).subscribe(([paramMap, subjects]) => this.loadDay(paramMap, subjects));
+    combineLatest([route.paramMap, dataService.subjects$])
+      .subscribe(([paramMap, subjects]) => this.loadDay(paramMap, subjects));
   }
 
   private prevDate(date: Date): Date {
@@ -108,10 +111,12 @@ export class TodayComponent {
   }
 
   public onScrollDown(event: IInfiniteScrollEvent): void {
+    this.disableScrollToCurrent = true;
     this.appendDay(this.nextDate(this.appendedDate));
   }
 
   public onScrollUp(event: IInfiniteScrollEvent): void {
+    this.disableScrollToCurrent = true;
     this.prependDay(this.prevDate(this.prependedDate));
   }
 }
