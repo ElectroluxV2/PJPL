@@ -1,6 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {DataService} from "../services/data.service";
-import {Subject} from "../services/api.service";
 import {throttleTime} from "rxjs";
 
 interface Day {
@@ -33,12 +32,12 @@ export class CalendarComponent {
 
   constructor(public readonly dataService: DataService) {
     // TODO: Fix memory leak (subscribe)
-    this.dataService.subjects$
+    this.dataService.subjectsChanged$
       .pipe(throttleTime(100))
-      .subscribe(subjects => this.makeCalendar(subjects));
+      .subscribe(() => this.makeCalendar())
   }
 
-  private makeCalendar(subjects: Map<number, Subject[]>): void {
+  private makeCalendar(): void {
     this.months = [];
 
     const formatter = new Intl.DateTimeFormat('pl', {month: 'long'});
@@ -77,7 +76,7 @@ export class CalendarComponent {
             .from({length: daysInMonth})
             .map((value, index) => ({
               index: index + 1,
-              color: subjects.has(new Date(year, month, index + 1).valueOf()) ? 'red' : 'none',
+              color: this.dataService.subjectsByTimestamp.has(new Date(year, month, index + 1).valueOf()) ? 'red' : 'none',
               current: now.getDate() === index + 1 && now.getMonth() === month && now.getFullYear() === year
             }))
         })

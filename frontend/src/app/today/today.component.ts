@@ -3,7 +3,7 @@ import {DataService} from "../services/data.service";
 import {ActivatedRoute, ParamMap} from "@angular/router";
 import {combineLatest} from "rxjs/internal/observable/combineLatest";
 import {IInfiniteScrollEvent} from "ngx-infinite-scroll";
-import {BehaviorSubject, throttleTime} from "rxjs";
+import {BehaviorSubject} from "rxjs";
 import {Subject} from "../services/api.service";
 
 interface Day {
@@ -29,8 +29,8 @@ export class TodayComponent {
   public disableScrollToCurrent = false;
 
   constructor(private readonly dataService: DataService, readonly route: ActivatedRoute) {
-    combineLatest([route.paramMap, dataService.subjects$])
-      .subscribe(([paramMap, subjects]) => this.loadDay(paramMap, subjects));
+    combineLatest([route.paramMap, dataService.subjectsChanged$])
+      .subscribe(([paramMap]) => this.loadDay(paramMap));
   }
 
   private prevDate(date: Date): Date {
@@ -43,7 +43,7 @@ export class TodayComponent {
     return new Date(copy.setDate(copy.getDate() + 1));
   }
 
-  private loadDay(paramMap: ParamMap, subjectsMap: Map<number, Subject[]>): void {
+  private loadDay(paramMap: ParamMap): void {
     const now = new Date(Date.now())
     const requestedDateWithoutTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
@@ -66,7 +66,7 @@ export class TodayComponent {
   private makeDay(dateWithoutTime: Date): Day {
     const timestamp = dateWithoutTime.valueOf();
 
-    const subjects = this.dataService.subjects$.value.get(timestamp);
+    const subjects = this.dataService.subjectsByTimestamp.get(timestamp);
 
     if (!subjects) {
       return {
@@ -110,12 +110,12 @@ export class TodayComponent {
     return Object.entries(additionalData);
   }
 
-  public onScrollDown(event: IInfiniteScrollEvent): void {
+  public onScrollDown(ignored: IInfiniteScrollEvent): void {
     this.disableScrollToCurrent = true;
     this.appendDay(this.nextDate(this.appendedDate));
   }
 
-  public onScrollUp(event: IInfiniteScrollEvent): void {
+  public onScrollUp(ignored: IInfiniteScrollEvent): void {
     this.disableScrollToCurrent = true;
     this.prependDay(this.prevDate(this.prependedDate));
   }

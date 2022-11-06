@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {BehaviorSubject, firstValueFrom} from "rxjs";
 import * as LZ from 'lz-string';
 import {ApiService, Subject} from "./api.service";
@@ -16,11 +16,9 @@ export interface GroupSyncInfo {
   providedIn: 'root'
 })
 export class DataService {
-  private readonly subjects = new Map<number, Subject[]>();
-  public readonly subjects$ = new BehaviorSubject<Map<number, Subject[]>>(new Map());
-
-  private groupSyncInfo: GroupSyncInfo[] = [];
-  public readonly groupSyncInfo$ = new BehaviorSubject<GroupSyncInfo[]>([]);
+  public readonly subjectsByGroupId = new Map<string, Subject[]>();
+  public readonly subjectsByTimestamp = new Map<number, Subject[]>();
+  public readonly subjectsChanged$ = new BehaviorSubject<void>(undefined);
 
   public firstValuableDay: number = Number.MAX_VALUE;
   public lastValuableDay: number = 0;
@@ -36,7 +34,7 @@ export class DataService {
 
   private async synchronizeGroup(groupId: string): Promise<void> {
     const subjects: Subject[] = await firstValueFrom(this.apiService.loadSubjects(groupId));
-    this.putSubjectsInMap(subjects);
+    this.updateSubjectsState(groupId, subjects);
     // console.log(`Loaded ${subjects.length} subjects for group ${groupId} from api.`);
     const json = JSON.stringify(subjects);
     const compressed = LZ.compress(json);
@@ -53,26 +51,31 @@ export class DataService {
     const json = LZ.decompress(compressed)!;
     const subjects: Subject[] = JSON.parse(json) ?? [];
     // console.log(`Loaded ${subjects.length} subjects for group ${groupId} from localStorage.`);
-    this.putSubjectsInMap(subjects);
+    this.updateSubjectsState(groupId, subjects);
 
     // Load fresh data anyway, used by automated synchronizer
     return this.synchronizeGroup(groupId);
   }
 
-  private putSubjectsInMap(subjects: Subject[]): void {
-    for (const subject of subjects) {
-      const timestamp = new Date(new Date(subject.from * 1000).toDateString()).valueOf(); // Date without time
+  private updateSubjectsState(groupId: string, subjects: Subject[]): void {
+    this.subjectsByGroupId.set(groupId, subjects);
 
-      if (!this.subjects.has(timestamp)) {
-        this.subjects.set(timestamp, []);
+    this.subjectsByTimestamp.clear();
+    for (const subjects of this.subjectsByGroupId.values()) {
+      for (const subject of subjects) {
+        const timestamp = new Date(new Date(subject.from * 1000).toDateString()).valueOf(); // Date without time
+
+        if (!this.subjectsByTimestamp.has(timestamp)) {
+          this.subjectsByTimestamp.set(timestamp, []);
+        }
+
+        this.subjectsByTimestamp.get(timestamp)!.push(subject);
+
+        this.firstValuableDay = Math.min(this.firstValuableDay, timestamp);
+        this.lastValuableDay = Math.max(this.lastValuableDay, timestamp);
       }
-
-      this.subjects.get(timestamp)!.push(subject);
-
-      this.firstValuableDay = Math.min(this.firstValuableDay, timestamp);
-      this.lastValuableDay = Math.max(this.lastValuableDay, timestamp);
     }
 
-    this.subjects$.next(this.subjects);
+    this.subjectsChanged$.next();
   }
 }
