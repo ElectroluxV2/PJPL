@@ -92,7 +92,8 @@ export class TodayComponent {
     }));
 
     withDiffs.sort((a, b) => a.diff - b.diff);
-    const min = withDiffs[0].diff;
+    // Current subject is not always closest, we filter out subject that already completed.
+    const min = withDiffs.filter(s => s.to * 1000 >= now.valueOf())?.[0]?.diff ?? -1;
     withDiffs.sort((a, b) => a.from - b.from);
 
     return {
