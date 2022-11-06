@@ -51,6 +51,15 @@ export class TodayComponent {
       requestedDateWithoutTime.setFullYear(Number(paramMap.get('year')));
       requestedDateWithoutTime.setMonth(Number(paramMap.get('month')));
       requestedDateWithoutTime.setDate(Number(paramMap.get('day')));
+
+      // If requested date is different from now we shall not scroll to current subject
+      if (
+        now.getFullYear() !== requestedDateWithoutTime.getFullYear() ||
+        now.getMonth() !== requestedDateWithoutTime.getMonth() ||
+        now.getDate() !== requestedDateWithoutTime.getDate()
+      ) {
+        this.disableScrollToCurrent = true;
+      }
     }
 
     this.appendDay(requestedDateWithoutTime);
