@@ -88,12 +88,12 @@ export class TodayComponent {
 
     const withDiffs = subjects.map(s => ({
       ...s,
-      diff: Math.min(Math.abs(s.from * 1000 - now.valueOf()), Math.abs(s.to * 1000 - now.valueOf()))
+      diff: Math.min(Math.abs(s.from - now.valueOf()), Math.abs(s.to - now.valueOf()))
     }));
 
     withDiffs.sort((a, b) => a.diff - b.diff);
     // Current subject is not always closest, we filter out subject that already completed.
-    const min = withDiffs.filter(s => s.to * 1000 >= now.valueOf())?.[0]?.diff ?? -1;
+    const min = withDiffs.filter(s => s.to >= now.valueOf())?.[0]?.diff ?? -1;
     withDiffs.sort((a, b) => a.from - b.from);
 
     return {

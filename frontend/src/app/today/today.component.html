@@ -15,8 +15,8 @@
     <ng-container *ngFor="let subject of day.subjects">
       <mat-list-item [attr.current]="subject.current ? '' : null" class="subject" mat-ripple>
         <mat-label mat-line>Sala: {{ subject.room }}</mat-label>
-        <span mat-line>Od: {{ subject.from * 1000 | date: 'MMM d, y, HH:mm': '': 'pl-PL' }}</span>
-        <span mat-line>Do: {{ subject.to * 1000 | date: 'MMM d, y, HH:mm': '': 'pl-PL' }}</span>
+        <span mat-line>Od: {{ subject.from | date: 'MMM d, y, HH:mm': '': 'pl-PL' }}</span>
+        <span mat-line>Do: {{ subject.to | date: 'MMM d, y, HH:mm': '': 'pl-PL' }}</span>
         <ul>
           <li *ngFor="let info of iterate(subject.additionalData)" mat-line>
             {{ info[0] }}: {{ info[1] }}

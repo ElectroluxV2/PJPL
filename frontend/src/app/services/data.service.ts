@@ -1,4 +1,4 @@
-import {EventEmitter, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {BehaviorSubject, firstValueFrom} from "rxjs";
 import * as LZ from 'lz-string';
 import {ApiService, Subject} from "./api.service";
@@ -63,7 +63,7 @@ export class DataService {
     this.subjectsByTimestamp.clear();
     for (const subjects of this.subjectsByGroupId.values()) {
       for (const subject of subjects) {
-        const timestamp = new Date(new Date(subject.from * 1000).toDateString()).valueOf(); // Date without time
+        const timestamp = new Date(new Date(subject.from).toDateString()).valueOf(); // Date without time
 
         if (!this.subjectsByTimestamp.has(timestamp)) {
           this.subjectsByTimestamp.set(timestamp, []);
