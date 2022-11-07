@@ -10,6 +10,9 @@ import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
 
 import static picocli.CommandLine.Command;
 import static picocli.CommandLine.Option;
@@ -17,6 +20,11 @@ import static pl.edu.pjwstk.pjpl.scrapper.Utils.*;
 
 @Command(name = "scrap", mixinStandardHelpOptions = true, description = "Scraps PJATK schedule to JSON files. Set storage root by setting 'PJPL.storage' env.")
 public class Scrapper implements Callable<Integer> {
+    public static final Logger LOGGER = Logger.getLogger(Scrapper.class.getName());
+    static {
+        LOGGER.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
+    }
+
     @Option(names = {"-se", "--semester"}, description = "Scrap only semesters that contains this string. If set to 'current' automatically filters semesters by current year.")
     private String semesterFilter = "";//"2022/2023 zimowy";
     @Option(names = {"-st", "--study"}, description = "Scrap only studies that contains this string.")
@@ -32,7 +40,7 @@ public class Scrapper implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        System.out.println("Welcome to PJPL Scrapper!");
+        LOGGER.info("Welcome to PJPL Scrapper!");
 
         final var driver = SeleniumFactory.makeDriver();
         final var wait = SeleniumFactory.makeWait(driver);
@@ -46,14 +54,14 @@ public class Scrapper implements Callable<Integer> {
             driver.quit();
         }
 
-        System.out.println("PJPL Scrapper is done with that.");
+        LOGGER.info("PJPL Scrapper is done with that.");
         return result;
     }
 
     public Integer logic(final WebDriver driver, final WebDriverWait wait) throws IOException {
         final var schedulePage = GroupSchedulePage.open(driver, wait);
 
-        System.out.printf("Scrapping, filters: semester(`%s`), study(`%s`), group(`%s`).%n", semesterFilter, studyFilter, groupFilter);
+        LOGGER.info("Scrapping, filters: semester(`%s`), study(`%s`), group(`%s`).".formatted(semesterFilter, studyFilter, groupFilter));
 
         final var semesterSelector =  schedulePage
                 .openSemesterSelector();
@@ -102,18 +110,17 @@ public class Scrapper implements Callable<Integer> {
                 final var groupsIndexFile = getStorage(semester, study, "groups");
                 updateIndex(groupsToScrap, groupsIndexFile);
 
-                System.out.printf("Scrapping semester [%d/%d] (`%s`), study [%d/%d] (`%s`), filters resolved the following targets:%n  semesters:%n%s%n  studies:%n%s%n  groups:%n%s%n",
+                LOGGER.info("Scrapping semester [%d/%d] (`%s`), study [%d/%d] (`%s`), filters resolved the following targets:%n  semesters:%n%s%n  studies:%n%s%n  groups:%n%s".formatted(
                         semesterIndex + 1, semestersToScrapSize, semester,
                         studyIndex + 1, studiesToScrapSize, study,
                         makeMultiLineList(semestersToScrap), makeMultiLineList(studiesToScrap), makeMultiLineList(groupsToScrap)
-                );
+                ));
 
                 final var scrappers = groupsToScrap
                         .stream()
                         .map(group -> new GroupScrapper(semester, study, group, id.incrementAndGet()));
 
                 try (final var service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
-
                     scrappers.forEach(service::submit);
                 }
             }

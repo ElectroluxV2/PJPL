@@ -29,7 +29,7 @@ public class GroupScrapper implements Runnable {
     }
 
     private void log(final String message) {
-        System.out.printf("Scrapper [%d] (%s): %s.%n", id, group, message);
+        Scrapper.LOGGER.info("Scrapper [%d] (%s): %s.".formatted(id, group, message));
     }
 
     @Override

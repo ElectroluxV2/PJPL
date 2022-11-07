@@ -69,7 +69,7 @@ public class Utils {
     }
 
     public static void updateIndex(final List<String> values, final File file) throws IOException {
-        System.out.printf("Updating index file: `%s`.%n", file);
+        Scrapper.LOGGER.info("Updating index file: `%s`.".formatted(file));
 
         HashMap<String, String> index;
 
