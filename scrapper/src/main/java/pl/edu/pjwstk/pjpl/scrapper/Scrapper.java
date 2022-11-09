@@ -22,6 +22,7 @@ import static pl.edu.pjwstk.pjpl.scrapper.Utils.*;
 public class Scrapper implements Callable<Integer> {
     public static final Logger LOGGER = Logger.getLogger(Scrapper.class.getName());
     static {
+        System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tF %1$tT %4$s %2$s %5$s%6$s%n");
         LOGGER.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
     }
 
@@ -69,7 +70,7 @@ public class Scrapper implements Callable<Integer> {
         final var semestersToScrap = semesterSelector
                 .listAvailableSemesters()
                 .stream()
-                .filter(semesterName -> semesterFilter.isEmpty() || semesterName.contains(semesterFilter))
+                .filter(semesterName -> semesterFilter.isEmpty() || Arrays.stream(semesterFilter.split(",")).allMatch(semesterName::contains))
                 .toList();
 
         final var semestersIndexFile = getStorage("semesters");
@@ -104,7 +105,7 @@ public class Scrapper implements Callable<Integer> {
                         .getGroupSelector()
                         .listAvailableGroups()
                         .stream()
-                        .filter(groupName -> groupFilter.isEmpty() || groupName.contains(groupFilter))
+                        .filter(groupName -> groupFilter.isEmpty() ||  Arrays.stream(groupFilter.split(",")).allMatch(groupName::contains))
                         .toList();
 
                 final var groupsIndexFile = getStorage(semester, study, "groups");
