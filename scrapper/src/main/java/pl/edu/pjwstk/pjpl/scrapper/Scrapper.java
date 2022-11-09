@@ -59,6 +59,11 @@ public class Scrapper implements Callable<Integer> {
         return result;
     }
 
+    public boolean filterMatch(final String value, final String filter) {
+        final var lower = value.toLowerCase();
+        return Arrays.stream(filter.toLowerCase().split(",")).allMatch(lower::contains);
+    }
+
     public Integer logic(final WebDriver driver, final WebDriverWait wait) throws IOException {
         final var schedulePage = GroupSchedulePage.open(driver, wait);
 
@@ -70,7 +75,7 @@ public class Scrapper implements Callable<Integer> {
         final var semestersToScrap = semesterSelector
                 .listAvailableSemesters()
                 .stream()
-                .filter(semesterName -> semesterFilter.isEmpty() || Arrays.stream(semesterFilter.split(",")).allMatch(semesterName::contains))
+                .filter(semesterName -> semesterFilter.isEmpty() || filterMatch(semesterName, semesterFilter))
                 .toList();
 
         final var semestersIndexFile = getStorage("semesters");
@@ -89,7 +94,7 @@ public class Scrapper implements Callable<Integer> {
             final var studiesToScrap = studySelector
                     .listAvailableStudies()
                     .stream()
-                    .filter(studyName -> studyFilter.isEmpty() || Arrays.stream(studyFilter.split(",")).allMatch(studyName::contains))
+                    .filter(studyName -> studyFilter.isEmpty() || filterMatch(studyName, studyFilter))
                     .toList();
 
             final var studiesIndexFile = getStorage(semester, "studies");
@@ -105,7 +110,7 @@ public class Scrapper implements Callable<Integer> {
                         .getGroupSelector()
                         .listAvailableGroups()
                         .stream()
-                        .filter(groupName -> groupFilter.isEmpty() ||  Arrays.stream(groupFilter.split(",")).allMatch(groupName::contains))
+                        .filter(groupName -> groupFilter.isEmpty() ||  filterMatch(groupName, groupFilter))
                         .toList();
 
                 final var groupsIndexFile = getStorage(semester, study, "groups");
