@@ -8,6 +8,7 @@ import pl.edu.pjwstk.pjpl.scrapper.components.GroupSchedulePage;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
@@ -32,6 +33,9 @@ public class Scrapper implements Callable<Integer> {
     private String studyFilter = "";//"Informatyka niestacjonarne Gdańsk";
     @Option(names = {"-gr", "--group"}, description = "Scrap only groups that contains this string.")
     private String groupFilter = "";//"GIn I.5 - 54c";
+
+    @Option(names = {"-th", "--threads"}, description = "Overrides thread count")
+    private int threads = Runtime.getRuntime().availableProcessors();
 
     public static void main(final String[] args) {
         System.setProperty("webdriver.chrome.driver", System.getenv("PJPL_webdriver"));
@@ -64,7 +68,7 @@ public class Scrapper implements Callable<Integer> {
         return Arrays.stream(filter.toLowerCase().split(",")).allMatch(lower::contains);
     }
 
-    public Integer logic(final WebDriver driver, final WebDriverWait wait) throws IOException {
+    public Integer logic(final WebDriver driver, final WebDriverWait wait) throws IOException, InterruptedException {
         final var schedulePage = GroupSchedulePage.open(driver, wait);
 
         LOGGER.info("Scrapping, filters: semester(`%s`), study(`%s`), group(`%s`).".formatted(semesterFilter, studyFilter, groupFilter));
@@ -122,13 +126,16 @@ public class Scrapper implements Callable<Integer> {
                         makeMultiLineList(semestersToScrap), makeMultiLineList(studiesToScrap), makeMultiLineList(groupsToScrap)
                 ));
 
+                final CountDownLatch latch = new CountDownLatch(groupsToScrap.size());
                 final var scrappers = groupsToScrap
                         .stream()
-                        .map(group -> new GroupScrapper(semester, study, group, id.incrementAndGet()));
+                        .map(group -> new GroupScrapper(semester, study, group, latch, id.incrementAndGet()));
 
-                try (final var service = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())) {
+                try (final var service = Executors.newFixedThreadPool(threads)) {
                     scrappers.forEach(service::submit);
                 }
+
+                latch.await();
             }
         }
 

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 import static pl.edu.pjwstk.pjpl.scrapper.Utils.*;
 
@@ -19,12 +20,14 @@ public class GroupScrapper implements Runnable {
     private final String semester;
     private final String study;
     private final String group;
+    private final CountDownLatch latch;
     private final int id;
 
-    public GroupScrapper(final String semester, final String study, final String group, final int id) {
+    public GroupScrapper(final String semester, final String study, final String group, CountDownLatch latch, final int id) {
         this.semester = semester;
         this.study = study;
         this.group = group;
+        this.latch = latch;
         this.id = id;
     }
 
@@ -38,6 +41,7 @@ public class GroupScrapper implements Runnable {
         while (counter < 10) {
             try {
                 logic();
+                latch.countDown();
                 break;
             } catch (final IOException exception) {
                 log("An error occurred during group `%s` parsing, trying again (%d / 10).".formatted(group, ++counter));
