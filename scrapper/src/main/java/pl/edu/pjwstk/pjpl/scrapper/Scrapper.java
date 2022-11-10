@@ -23,7 +23,7 @@ import static pl.edu.pjwstk.pjpl.scrapper.Utils.*;
 public class Scrapper implements Callable<Integer> {
     public static final Logger LOGGER = Logger.getLogger(Scrapper.class.getName());
     static {
-        System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tF %1$tT %4$s %2$s %5$s%6$s%n");
+        System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tF %1$tT %4$s %5$s%6$s%n");
         LOGGER.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
     }
 
@@ -33,7 +33,6 @@ public class Scrapper implements Callable<Integer> {
     private String studyFilter = "";//"Informatyka niestacjonarne Gdańsk";
     @Option(names = {"-gr", "--group"}, description = "Scrap only groups that contains this string.")
     private String groupFilter = "";//"GIn I.5 - 54c";
-
     @Option(names = {"-th", "--threads"}, description = "Overrides thread count")
     private int threads = Runtime.getRuntime().availableProcessors();
 
@@ -63,12 +62,13 @@ public class Scrapper implements Callable<Integer> {
         return result;
     }
 
-    public boolean filterMatch(final String value, final String filter) {
+    private static boolean filterMatch(final String value, final String filter) {
         final var lower = value.toLowerCase();
         return Arrays.stream(filter.toLowerCase().split(",")).allMatch(lower::contains);
     }
 
-    public Integer logic(final WebDriver driver, final WebDriverWait wait) throws IOException, InterruptedException {
+    private Integer logic(final WebDriver driver, final WebDriverWait wait) throws IOException, InterruptedException {
+        final var timeStart = System.currentTimeMillis();
         final var schedulePage = GroupSchedulePage.open(driver, wait);
 
         LOGGER.info("Scrapping, filters: semester(`%s`), study(`%s`), group(`%s`).".formatted(semesterFilter, studyFilter, groupFilter));
@@ -81,6 +81,8 @@ public class Scrapper implements Callable<Integer> {
                 .stream()
                 .filter(semesterName -> semesterFilter.isEmpty() || filterMatch(semesterName, semesterFilter))
                 .toList();
+
+        LOGGER.info("Semesters to scrap:%n%s".formatted(makeMultiLineList(semestersToScrap)));
 
         final var semestersIndexFile = getStorage("semesters");
         updateIndex(semestersToScrap, semestersIndexFile);
@@ -101,6 +103,8 @@ public class Scrapper implements Callable<Integer> {
                     .filter(studyName -> studyFilter.isEmpty() || filterMatch(studyName, studyFilter))
                     .toList();
 
+            LOGGER.info("Studies (inside %s) to scrap:%n%s".formatted(semester, makeMultiLineList(studiesToScrap)));
+
             final var studiesIndexFile = getStorage(semester, "studies");
             updateIndex(studiesToScrap, studiesIndexFile);
 
@@ -120,10 +124,12 @@ public class Scrapper implements Callable<Integer> {
                 final var groupsIndexFile = getStorage(semester, study, "groups");
                 updateIndex(groupsToScrap, groupsIndexFile);
 
-                LOGGER.info("Scrapping semester [%d/%d] (`%s`), study [%d/%d] (`%s`), filters resolved the following targets:%n  semesters:%n%s%n  studies:%n%s%n  groups:%n%s".formatted(
+                final var timeSpent = System.currentTimeMillis() - timeStart;
+                LOGGER.info("Groups (inside %s/%s) to scrap:%n%s".formatted(semester, study, makeMultiLineList(groupsToScrap)));
+                LOGGER.info("Time: %s, scrapping progress: semester [%d/%d] (`%s`), study [%d/%d] (`%s`).%n".formatted(
+                        humanReadableFormat(timeSpent),
                         semesterIndex + 1, semestersToScrapSize, semester,
-                        studyIndex + 1, studiesToScrapSize, study,
-                        makeMultiLineList(semestersToScrap), makeMultiLineList(studiesToScrap), makeMultiLineList(groupsToScrap)
+                        studyIndex + 1, studiesToScrapSize, study
                 ));
 
                 final CountDownLatch latch = new CountDownLatch(groupsToScrap.size());
