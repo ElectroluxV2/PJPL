@@ -26,7 +26,7 @@ public class StudySelector {
                 .click();
 
         wait.until(ExpectedConditions.presenceOfElementLocated(studyDropDownBy));
-        wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(studyDropDownBy, By.tagName("li"))); // Wait until options load
+        // Waiting until options load here is not solution, hence there may be no options
 
         return new OpenedStudySelector(driver, wait);
     }

@@ -26,7 +26,7 @@ public class SemesterSelector {
                 .click();
 
         wait.until(ExpectedConditions.presenceOfElementLocated(semesterDropDownBy));
-        wait.until(ExpectedConditions.visibilityOfNestedElementsLocatedBy(semesterDropDownBy, By.tagName("li"))); // Wait until options load
+        // Waiting until options load here is not solution, hence there may be no options
 
         return new OpenedSemesterSelector(driver, wait);
     }

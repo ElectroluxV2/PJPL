@@ -27,6 +27,7 @@ public class OpenedSemesterSelector {
                 .findElements(By.tagName("li"))
                 .stream()
                 .map(li -> li.getText().trim())
+                .filter(name -> !name.isEmpty())
                 .toList();
     }
 
