@@ -126,8 +126,8 @@ public class SeleniumFactory {
         }
 
         @Override
-        public void close() {
-            super.close();
+        public void quit() {
+            super.quit();
             SeleniumFactory.stopContainer(port);
         }
     }
