@@ -8,7 +8,6 @@ import pl.edu.pjwstk.pjpl.scrapper.components.GroupSchedulePage;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
@@ -67,7 +66,7 @@ public class Scrapper implements Callable<Integer> {
         return Arrays.stream(filter.toLowerCase().split(",")).allMatch(lower::contains);
     }
 
-    private Integer logic(final WebDriver driver, final WebDriverWait wait) throws IOException, InterruptedException {
+    private Integer logic(final WebDriver driver, final WebDriverWait wait) throws IOException {
         final var timeStart = System.currentTimeMillis();
         final var schedulePage = GroupSchedulePage.open(driver, wait);
 
@@ -132,16 +131,13 @@ public class Scrapper implements Callable<Integer> {
                         studyIndex + 1, studiesToScrapSize, study
                 ));
 
-                final CountDownLatch latch = new CountDownLatch(groupsToScrap.size());
                 final var scrappers = groupsToScrap
                         .stream()
-                        .map(group -> new GroupScrapper(semester, study, group, latch, id.incrementAndGet()));
+                        .map(group -> new GroupScrapper(semester, study, group, id.incrementAndGet()));
 
                 try (final var service = Executors.newFixedThreadPool(threads)) {
                     scrappers.forEach(service::submit);
                 }
-
-                latch.await();
             }
         }
 
