@@ -47,7 +47,7 @@ public class GroupScrapper implements Runnable {
     }
 
     private void logic() throws IOException {
-        log("Start");
+        log("Initialization began");
 
         final File storageFile;
         try {
@@ -57,10 +57,17 @@ public class GroupScrapper implements Runnable {
             exception.printStackTrace(System.err);
             throw new RuntimeException(exception);
         }
+        log("Initialization of storage - done");
 
         final var driver = SeleniumFactory.makeDriver();
+        log("Initialization of WebDriver - done");
+
         final var wait = SeleniumFactory.makeWait(driver);
+        log("Initialization of WebDriverWait - done");
+
         final var schedulePage = GroupSchedulePage.open(driver, wait);
+
+        log("Initialization done");
 
         schedulePage
                 .openSemesterSelector()
