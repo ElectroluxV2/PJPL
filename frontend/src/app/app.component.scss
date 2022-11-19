@@ -15,6 +15,7 @@
 
   app-root {
     background-color: mat.get-color-from-palette($primary, 900) !important;
+    color: mat.get-color-from-palette($accent, 50) !important;
   }
 }
 

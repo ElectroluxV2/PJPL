@@ -2,11 +2,21 @@
   <div mat-subheader>Wybór grup</div>
   <mat-list-item>
     <mat-chip-listbox>
-      <mat-chip-option *ngFor="let group of groupService.selectedGroups$ | async">
+      <mat-chip-option
+        *ngFor="let group of groupService.selectedGroups$ | async"
+        color="accent"
+        selectable="false"
+      >
         {{ group.name }}
         <mat-icon matChipRemove (click)="groupService.deselectGroup(group.id)">cancel</mat-icon>
       </mat-chip-option>
-      <button mat-icon-button color="primary" (click)="openGroupChooser()">
+
+      <button
+        class="add-button"
+        mat-icon-button
+        color="accent"
+        (click)="openGroupChooser()
+      ">
         <mat-icon>add</mat-icon>
       </button>
     </mat-chip-listbox>

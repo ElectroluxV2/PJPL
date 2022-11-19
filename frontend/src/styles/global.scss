@@ -3,6 +3,8 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 mat-list-item {
   height: auto !important;
+  min-height: 48px;
+  margin-bottom: 0.2em;
 }
 
 mat-form-field {

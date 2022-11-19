@@ -1,0 +1,30 @@
+@use '@angular/material' as mat;
+
+@mixin component-colors($theme) {
+  app-settings {
+    $accent: map-get($theme, accent);
+    $primary: map-get($theme, primary);
+    $warn: map-get($theme, warn);
+
+    mat-chip-option[color='accent'] {
+      background-color: mat.get-color-from-palette($accent, 900) !important;
+    }
+  }
+}
+
+::ng-deep app-settings {
+  mat-list {
+    mat-list-item {
+      padding: 0 !important;
+      span.mdc-list-item__content {
+        pointer-events: auto;
+        overflow: auto;
+        padding: 0 1em;
+      }
+    }
+  }
+
+  .add-button {
+    margin-top: -4px;
+  }
+}
