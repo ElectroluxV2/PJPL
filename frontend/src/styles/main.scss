@@ -44,11 +44,11 @@ $frontend-dark-theme: mat.define-dark-theme((
 // that you are using.
 @include mat.all-component-typographies($frontend-dark-theme); // TODO: Include only styles that we use
 @include mat.all-component-themes($frontend-light-theme);
-@include calendar.theme($frontend-light-theme);
+@include calendar.component-colors($frontend-light-theme);
 
 .dark {
   @include mat.all-component-colors($frontend-dark-theme);
-  @include calendar.theme($frontend-dark-theme);
+  @include calendar.component-colors($frontend-dark-theme);
 }
 
 /* You can add global styles to this file, and also import other style files */
