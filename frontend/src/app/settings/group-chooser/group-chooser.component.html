@@ -1,10 +1,15 @@
-<button mat-icon-button (click)="close()">
+<button
+  mat-icon-button
+  color="accent"
+  class="close-button"
+  (click)="close()"
+>
   <mat-icon>close</mat-icon>
 </button>
 
-<mat-form-field appearance="outline">
+<mat-form-field appearance="outline" class="custom-select">
   <mat-label>Semestr</mat-label>
-  <mat-select [value]="selectedSemestersId$ | async">
+  <mat-select [value]="selectedSemestersId$ | async" panelClass="custom-panel">
     <mat-option
       *ngFor="let semester of groupService.availableSemesters$ | async"
       [value]="semester.id"
@@ -13,9 +18,9 @@
   </mat-select>
 </mat-form-field>
 
-<mat-form-field appearance="outline" *ngIf="filteredStudies$ | async">
+<mat-form-field appearance="outline" class="custom-select" *ngIf="filteredStudies$ | async">
   <mat-label>Studia</mat-label>
-  <mat-select [value]="selectedStudyId$ | async">
+  <mat-select [value]="selectedStudyId$ | async" panelClass="custom-panel">
     <mat-option
       *ngFor="let study of filteredStudies$ | async"
       [value]="study.id"
@@ -27,7 +32,7 @@
 <mat-chip-listbox *ngIf="filteredGroups$ | async">
   <mat-chip-option
     *ngFor="let group of filteredGroups$ | async"
-    [color]="groupService.isGroupSelected(group.id) ? 'accent' : undefined"
+    [attr.color]="groupService.isGroupSelected(group.id) ? 'accent' : undefined"
     (click)="groupService.toggleGroupSelection(group)"
     selectable="false"
   >{{ group.name }}</mat-chip-option>

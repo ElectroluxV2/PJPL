@@ -1,4 +1,21 @@
+@use '@angular/material' as mat;
+
+@mixin component-colors($theme) {
+  .mat-bottom-sheet-container {
+    $accent: map-get($theme, accent);
+    $primary: map-get($theme, primary);
+    $warn: map-get($theme, warn);
+
+    background-color: mat.get-color-from-palette($primary, 500) !important;
+  }
+}
+
 ::ng-deep .mat-bottom-sheet-container {
   //noinspection CssInvalidPropertyValue
   height: 80dvh !important;
+
+  .close-button {
+    margin-left: -0.5em;
+    margin-bottom: 0.5em;
+  }
 }

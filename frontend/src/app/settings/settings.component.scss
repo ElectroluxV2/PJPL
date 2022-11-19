@@ -5,10 +5,6 @@
     $accent: map-get($theme, accent);
     $primary: map-get($theme, primary);
     $warn: map-get($theme, warn);
-
-    mat-chip-option[color='accent'] {
-      background-color: mat.get-color-from-palette($accent, 900) !important;
-    }
   }
 }
 
