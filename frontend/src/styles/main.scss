@@ -46,7 +46,8 @@ $frontend-dark-theme: mat.define-dark-theme((
 @include mat.all-component-themes($frontend-light-theme);
 @include calendar.component-colors($frontend-light-theme);
 
-.dark {
+@media (prefers-color-scheme: dark) {
+  body { color-scheme: dark; }
   @include mat.all-component-colors($frontend-dark-theme);
   @include calendar.component-colors($frontend-dark-theme);
 }
