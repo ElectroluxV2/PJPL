@@ -1,25 +1,33 @@
-<mat-list #list
+<ul
+  class="subjects"
   appScrollToCurrent
   [disableScrollToCurrent]="disableScrollToCurrent"
 >
   <ng-container *ngFor="let day of days | async">
     <ng-container *ngIf="!day.subjects">
-      <mat-list-item>
+      <li class="no-data">
         No data for {{ day.timestamp | date: 'MMM d, y': '': 'pl-PL' }}
-      </mat-list-item>
+      </li>
     </ng-container>
     <ng-container *ngFor="let subject of day.subjects">
-      <mat-list-item [attr.current]="subject.current ? '' : null" class="subject" mat-ripple>
-        <mat-label mat-line>Sala: {{ subject.room }}</mat-label>
-        <span mat-line>Od: {{ subject.from | date: 'MMM d, y, HH:mm': '': 'pl-PL' }}</span>
-        <span mat-line>Do: {{ subject.to | date: 'MMM d, y, HH:mm': '': 'pl-PL' }}</span>
-        <ul>
-          <li *ngFor="let info of iterate(subject.additionalData)" mat-line>
-            {{ info[0] }}: {{ info[1] }}
-          </li>
-        </ul>
-      </mat-list-item>
+        <li class="subject" [attr.current]="subject.current ? '' : null" mat-ripple>
+          <section class="header">
+            <span class="time">
+              {{ subject.from | date: 'HH:mm': '': 'pl-PL' }}
+              -
+              {{ subject.to | date: 'HH:mm': '': 'pl-PL' }}
+            </span>
+            <span class="room">{{ subject.room }}</span>
+          </section>
+          <ul class="info">
+            <li *ngFor="let info of subject.additionalData | keyvalue">
+              <span class="key">{{ info.key }}</span>
+              :
+              <span class="value">{{ info.value }}</span>
+            </li>
+          </ul>
+        </li>
       <mat-divider></mat-divider>
     </ng-container>
   </ng-container>
-</mat-list>
+</ul>

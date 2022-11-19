@@ -1,20 +1,88 @@
+@use '@angular/material' as mat;
 
-/* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
-::ng-deep .subject > .mat-list-item-content {
-  flex-direction: column !important;
-  align-items: flex-start !important;
+@mixin component-colors($theme) {
+  $accent: map-get($theme, accent);
+  $primary: map-get($theme, primary);
+  $warn: map-get($theme, warn);
+
+  ul.subjects {
+    li.subject {
+      &[current] {
+        section.header {
+          span.time {
+            color: mat.get-color-from-palette($warn, 300) !important;
+          }
+
+          span.room {
+            background-color: mat.get-color-from-palette($warn, 900) !important;
+          }
+        }
+      }
+
+      section.header {
+        span.room {
+          background-color: mat.get-color-from-palette($accent, 900) !important;
+        }
+
+        span.time {
+          color: mat.get-color-from-palette($accent, 200) !important;
+        }
+      }
+
+      ul.info {
+        span.key {
+          color: mat.get-color-from-palette($accent, 50) !important;
+        }
+      }
+    }
+  }
 }
 
 :host {
   min-height: 1px;
-  /* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
-  mat-list {
+  ul.subjects {
+    margin: 0;
+    padding: 0;
     height: 100%;
     overflow-y: auto;
-  }
-}
+    li.subject {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8em;
+      padding: 1em;
 
-/* TODO(mdc-migration): The following rule targets internal classes of list that may no longer apply for the MDC version. */
-mat-list-item[current] {
-  background-color: darkgoldenrod;
+      section.header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 24px;
+        font-weight: 600;
+
+        span.room {
+          width: auto;
+          padding: 0.2em;
+          font-weight: 600;
+        }
+
+        span.time {
+
+        }
+      }
+
+      ul.info {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        font-size: 16px;
+
+        span.key {
+          font-weight: 400;
+        }
+
+        span.value {
+          font-weight: 300;
+        }
+      }
+    }
+  }
 }

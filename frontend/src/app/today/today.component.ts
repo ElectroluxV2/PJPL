@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, ViewChild, ViewContainerRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {DataService} from "../services/data.service";
 import {ActivatedRoute, ParamMap} from "@angular/router";
 import {combineLatest} from "rxjs/internal/observable/combineLatest";
@@ -18,8 +18,7 @@ interface Day {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodayComponent {
-  @ViewChild('list', {read: ViewContainerRef}) list?: ViewContainerRef;
-  private readonly daysSource: Day[] = [];
+  private daysSource: Day[] = [];
   public readonly days = new BehaviorSubject<Day[]>(this.daysSource);
 
   public disableScrollToCurrent = false;
@@ -89,11 +88,7 @@ export class TodayComponent {
   }
 
   private appendDay(dateWithoutTime: Date): void {
-    this.daysSource.push(this.makeDay(dateWithoutTime));
+    this.daysSource = [(this.makeDay(dateWithoutTime))];
     this.days.next(this.daysSource);
-  }
-
-  public iterate(additionalData: Record<string, string>): [string, string][] {
-    return Object.entries(additionalData);
   }
 }

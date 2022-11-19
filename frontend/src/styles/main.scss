@@ -5,6 +5,7 @@
 @use 'src/app/calendar/calendar.component' as calendar;
 @use 'src/app/settings/settings.component' as settings;
 @use 'src/app/settings/group-chooser/group-chooser.component' as group-chooser;
+@use 'src/app/today/today.component' as today;
 @use 'src/app/app.component' as app;
 // Material theme palettes
 @use 'src/styles/primary-light' as primary-light;
@@ -50,6 +51,7 @@ $frontend-dark-theme: mat.define-dark-theme((
 @include calendar.component-colors($frontend-light-theme);
 @include settings.component-colors($frontend-light-theme);
 @include group-chooser.component-colors($frontend-light-theme);
+@include today.component-colors($frontend-light-theme);
 @include app.component-colors($frontend-light-theme);
 
 @media (prefers-color-scheme: dark) {
@@ -58,6 +60,7 @@ $frontend-dark-theme: mat.define-dark-theme((
   @include calendar.component-colors($frontend-dark-theme);
   @include settings.component-colors($frontend-dark-theme);
   @include group-chooser.component-colors($frontend-dark-theme);
+  @include today.component-colors($frontend-dark-theme);
   @include app.component-colors($frontend-dark-theme);
 }
 
