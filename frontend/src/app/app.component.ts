@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {MatButton} from "@angular/material/button";
+import {MatLegacyButton as MatButton} from "@angular/material/legacy-button";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import {filter, map, tap} from "rxjs";
 
