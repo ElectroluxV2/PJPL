@@ -27,13 +27,13 @@
     </mat-form-field>
   </mat-list-item>
   <mat-list-item *ngIf="filteredGroups$ | async">
-    <mat-chip-list>
-      <mat-chip
+    <mat-chip-listbox>
+      <mat-chip-option
         *ngFor="let group of filteredGroups$ | async"
         [color]="groupService.isGroupSelected(group.id) ? 'accent' : 'primary'"
         selected
         (click)="groupService.toggleGroupSelection(group)"
-      >{{ group.name }}</mat-chip>
-    </mat-chip-list>
+      >{{ group.name }}</mat-chip-option>
+    </mat-chip-listbox>
   </mat-list-item>
 </mat-list>
