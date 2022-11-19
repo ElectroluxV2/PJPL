@@ -1,10 +1,6 @@
 <mat-list #list
-  infinite-scroll
   appScrollToCurrent
   [disableScrollToCurrent]="disableScrollToCurrent"
-  (scrolled)="onScrollDown($event)"
-  (scrolledUp)="onScrollUp($event)"
-  [scrollWindow]="false"
 >
   <ng-container *ngFor="let day of days | async">
     <ng-container *ngIf="!day.subjects">

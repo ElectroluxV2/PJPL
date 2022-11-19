@@ -13,7 +13,6 @@ import {HttpClientModule} from "@angular/common/http";
 import {SettingsComponent} from './settings/settings.component';
 import {NotFoundComponent} from './not-found/not-found.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import {ScrollToCurrentDirective} from './scroll-to-current.directive';
 import {GroupChooserComponent} from './settings/group-chooser/group-chooser.component';
 import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
@@ -59,7 +58,6 @@ registerLocaleData(localePl);
     ReactiveFormsModule,
     FormsModule,
     MatCardModule,
-    InfiniteScrollModule,
     MatChipsModule,
     MatBottomSheetModule
   ],

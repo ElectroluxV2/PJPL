@@ -2,7 +2,6 @@ import {ChangeDetectionStrategy, Component, ViewChild, ViewContainerRef} from '@
 import {DataService} from "../services/data.service";
 import {ActivatedRoute, ParamMap} from "@angular/router";
 import {combineLatest} from "rxjs/internal/observable/combineLatest";
-import {IInfiniteScrollEvent} from "ngx-infinite-scroll";
 import {BehaviorSubject} from "rxjs";
 import {Subject} from "../services/api.service";
 
@@ -23,24 +22,11 @@ export class TodayComponent {
   private readonly daysSource: Day[] = [];
   public readonly days = new BehaviorSubject<Day[]>(this.daysSource);
 
-  private prependedDate!: Date;
-  private appendedDate!: Date;
-
   public disableScrollToCurrent = false;
 
   constructor(private readonly dataService: DataService, readonly route: ActivatedRoute) {
     combineLatest([route.paramMap, dataService.subjectsChanged$])
       .subscribe(([paramMap]) => this.loadDay(paramMap));
-  }
-
-  private prevDate(date: Date): Date {
-    const copy = new Date(date.valueOf());
-    return new Date(copy.setDate(copy.getDate() - 1));
-  }
-
-  private nextDate(date: Date): Date {
-    const copy = new Date(date.valueOf());
-    return new Date(copy.setDate(copy.getDate() + 1));
   }
 
   private loadDay(paramMap: ParamMap): void {
@@ -63,13 +49,6 @@ export class TodayComponent {
     }
 
     this.appendDay(requestedDateWithoutTime);
-    setTimeout(this.loadMoreDays.bind(this, requestedDateWithoutTime), 0);
-  }
-
-  private loadMoreDays(requestedDateWithoutTime: Date): void {
-    this.list!.element.nativeElement.scrollTo(0, 1); // Auto scroll happen only when stick to top
-    this.prependDay(this.prevDate(requestedDateWithoutTime));
-    this.appendDay(this.nextDate(requestedDateWithoutTime));
   }
 
   private makeDay(dateWithoutTime: Date): Day {
@@ -110,28 +89,11 @@ export class TodayComponent {
   }
 
   private appendDay(dateWithoutTime: Date): void {
-    this.appendedDate = dateWithoutTime;
     this.daysSource.push(this.makeDay(dateWithoutTime));
-    this.days.next(this.daysSource);
-  }
-
-  private prependDay(dateWithoutTime: Date): void {
-    this.prependedDate = dateWithoutTime;
-    this.daysSource.unshift(this.makeDay(dateWithoutTime));
     this.days.next(this.daysSource);
   }
 
   public iterate(additionalData: Record<string, string>): [string, string][] {
     return Object.entries(additionalData);
-  }
-
-  public onScrollDown(ignored: IInfiniteScrollEvent): void {
-    this.disableScrollToCurrent = true;
-    this.appendDay(this.nextDate(this.appendedDate));
-  }
-
-  public onScrollUp(ignored: IInfiniteScrollEvent): void {
-    this.disableScrollToCurrent = true;
-    this.prependDay(this.prevDate(this.prependedDate));
   }
 }
