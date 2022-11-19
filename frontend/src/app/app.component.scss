@@ -60,6 +60,7 @@
   align-items: stretch;
 
   mat-toolbar {
+    flex-shrink: 0;
     z-index: 1;
     margin-top: auto;
     justify-content: space-around
