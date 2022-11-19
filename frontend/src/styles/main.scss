@@ -3,6 +3,7 @@
 @use 'node_modules/@angular/material/index' as mat;
 // Plus imports for other components in your app.
 @use 'src/app/calendar/calendar.component' as calendar;
+@use 'src/app/app.component' as app;
 // Material theme palettes
 @use 'src/styles/primary-light' as primary-light;
 @use 'src/styles/primary-dark' as primary-dark;
@@ -45,11 +46,13 @@ $frontend-dark-theme: mat.define-dark-theme((
 @include mat.all-component-typographies($frontend-dark-theme); // TODO: Include only styles that we use
 @include mat.all-component-themes($frontend-light-theme);
 @include calendar.component-colors($frontend-light-theme);
+@include app.component-colors($frontend-light-theme);
 
 @media (prefers-color-scheme: dark) {
   body { color-scheme: dark; }
   @include mat.all-component-colors($frontend-dark-theme);
   @include calendar.component-colors($frontend-dark-theme);
+  @include app.component-colors($frontend-dark-theme);
 }
 
 /* You can add global styles to this file, and also import other style files */
