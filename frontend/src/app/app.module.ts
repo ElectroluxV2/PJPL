@@ -7,26 +7,25 @@ import {environment} from '../environments/environment';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatIconModule} from "@angular/material/icon";
-import {MatButtonModule} from "@angular/material/button";
 import {CalendarComponent} from './calendar/calendar.component';
 import {TodayComponent} from './today/today.component';
 import {MatLineModule, MatRippleModule} from "@angular/material/core";
 import {HttpClientModule} from "@angular/common/http";
 import {SettingsComponent} from './settings/settings.component';
 import {NotFoundComponent} from './not-found/not-found.component';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {InfiniteScrollModule} from "ngx-infinite-scroll";
+import {ScrollToCurrentDirective} from './scroll-to-current.directive';
+import {GroupChooserComponent} from './settings/group-chooser/group-chooser.component';
+import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
+import {registerLocaleData} from "@angular/common";
+import localePl from '@angular/common/locales/pl';
+import {MatButtonModule} from "@angular/material/button";
 import {MatListModule} from "@angular/material/list";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatCardModule} from "@angular/material/card";
-import {registerLocaleData} from "@angular/common";
-import localePl from '@angular/common/locales/pl';
-import {InfiniteScrollModule} from "ngx-infinite-scroll";
-import { ScrollToCurrentDirective } from './scroll-to-current.directive';
 import {MatChipsModule} from "@angular/material/chips";
-import { GroupChooserComponent } from './settings/group-chooser/group-chooser.component';
-import {MatBottomSheetModule} from "@angular/material/bottom-sheet";
-
 registerLocaleData(localePl);
 
 @NgModule({

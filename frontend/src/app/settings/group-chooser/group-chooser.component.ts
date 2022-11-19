@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {GroupService, GroupWithMetadata} from "../../services/group.service";
-import {MatOptionSelectionChange} from "@angular/material/core";
+import {MatLegacyOptionSelectionChange as MatOptionSelectionChange} from "@angular/material/legacy-core";
 import {ReplaySubject} from "rxjs";
 import {MatBottomSheetRef} from "@angular/material/bottom-sheet";
 import {Study} from "../../services/api.service";
