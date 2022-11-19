@@ -9,6 +9,24 @@
     background-color: mat.get-color-from-palette($accent, 800) !important;
     color: mat.get-color-from-palette($primary, 900) !important;
   }
+
+  section.calendar {
+    article.month {
+      .day {
+        border-color: mat.get-color-from-palette($primary, 400) !important;
+        color: mat.get-color-from-palette($accent, 50) !important;
+
+        &[current] {
+          background-color: mat.get-color-from-palette($accent, 900) !important;
+          color: mat.get-contrast-color-from-palette($primary, 900) !important;
+        }
+
+        &.red {
+          border-color: mat.get-color-from-palette($accent, 900) !important;
+        }
+      }
+    }
+  }
 }
 
 :host {
@@ -29,8 +47,9 @@
     top: 0;
 
     h2 {
-      margin: 0;
+      margin: 4px 0 -2px;
       font-size: 6vw;
+      font-weight: 800;
     }
   }
 
@@ -45,25 +64,20 @@
         grid-column: 1 / span 7;
         justify-self: left;
         font-size: 6vw;
+        text-transform: capitalize;
       }
 
       .day {
+        box-sizing: border-box;
         width: 100%;
         aspect-ratio: 1 / 1;
-        border: 1px solid blue;
+        border: 2px solid;
         border-radius: 50%;
         display: grid;
         place-items: center;
         text-decoration: none;
         font-size: 5vw;
-
-        &[current] {
-          background-color: darkgoldenrod;
-        }
-
-        &.red {
-          border-color: red;
-        }
+        font-weight: 500;
       }
     }
   }
