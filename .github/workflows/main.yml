@@ -27,7 +27,7 @@ jobs:
           
       - name: 📂 RSync files
         run: |
-          export RSYNC_PASSWORD=${{ secrets.password }} ;
+          export RSYNC_PASSWORD="${{ secrets.password }}" ;
           rsync -r --delete ./dist/frontend ${{ secrets.username }}@${{ secrets.host }}:/home/${{ secrets.username }}/PJPL/PWA
           
       - name: 🚚 Replace PWA files in apache
