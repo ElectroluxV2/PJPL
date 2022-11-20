@@ -24,6 +24,14 @@
               <span class="key">{{ info.key }}: </span>
               <span class="value">{{ info.value }}</span>
             </li>
+            <li>
+              <span class="key">Grupy: </span>
+              <span class="value">{{ subject.groups.join(',') }}</span>
+            </li>
+            <li>
+              <span class="key">Budynek: </span>
+              <span class="value">{{ subject.location}}</span>
+            </li>
           </ul>
         </li>
       <mat-divider></mat-divider>
