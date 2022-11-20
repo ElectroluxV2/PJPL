@@ -25,22 +25,26 @@ jobs:
           pnpm install
           pnpm ng build
           
-      - name: 📂 RSync files
-        run: |
-          export RSYNC_PASSWORD="${{ secrets.password }}" ;
-          rsync -r --delete ./dist/frontend rsync://${{ secrets.username }}@${{ secrets.host }}:/home/${{ secrets.username }}/PJPL/PWA
+      - name: 📂 Sync files
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+            username: ${{ secrets.username }}
+            server: ${{ secrets.host }}
+            ssh_private_key: ${{ secrets.ssh }} 
+            local_path: './dist/frontend/*'
+            remote_path: '/home/${{ secrets.username }}/PJPL/PWA'
           
       - name: 🚚 Replace PWA files in apache
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.host }}
           username: ${{ secrets.username }}
-          password: ${{ secrets.password }}
+          key: ${{ secrets.ssh }}
           port: 22
           script: |
-           cd /var/www/html ;
-           rm *.js ;
-           rm *.html ;
-           rm *.css ;
-           rm -r assets ;
+           cd /var/www/html
+           rm *.js
+           rm *.html
+           rm *.css
+           rm -r assets
            cp -r /home/ubuntu/PJPL/PWA/* . 
