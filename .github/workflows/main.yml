@@ -31,7 +31,7 @@ jobs:
             username: ${{ secrets.username }}
             server: ${{ secrets.host }}
             ssh_private_key: ${{ secrets.ssh }} 
-            local_path: './*'
+            local_path: './frontend/dist/frontend/*'
             remote_path: '/home/${{ secrets.username }}/PJPL/PWA'
           
       - name: 🚚 Replace PWA files in apache
