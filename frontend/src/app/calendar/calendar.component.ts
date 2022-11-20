@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {DataService} from "../services/data.service";
-import {throttleTime} from "rxjs";
+import {map, Observable, shareReplay, throttleTime} from "rxjs";
 
 interface Day {
   index: number;
@@ -28,17 +28,18 @@ interface ViewRange {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CalendarComponent {
-  public months: Month[] = [];
+  public readonly months$: Observable<Month[]>;
 
   constructor(public readonly dataService: DataService) {
-    // TODO: Fix memory leak (subscribe)
-    this.dataService.subjectsChanged$
-      .pipe(throttleTime(100))
-      .subscribe(() => this.makeCalendar())
+    this.months$ = this.dataService.subjectsChanged$.pipe(
+      throttleTime(100),
+      map(() => this.makeCalendar()),
+      shareReplay(1),
+    );
   }
 
-  private makeCalendar(): void {
-    this.months = [];
+  private makeCalendar(): Month[] {
+    const months = [];
 
     const formatter = new Intl.DateTimeFormat('pl', {month: 'long'});
 
@@ -67,7 +68,7 @@ export class CalendarComponent {
         const lastDayInMonth = new Date(year, month + 1, 0);
         const daysInMonth = lastDayInMonth.getDate();
 
-        this.months.push({
+        months.push({
           name: formatter.format(new Date(year, month, 1)),
           offset: monthOffset,
           year,
@@ -82,5 +83,7 @@ export class CalendarComponent {
         })
       }
     }
+
+    return months;
   }
 }
