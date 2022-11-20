@@ -5,12 +5,18 @@
   $primary: map-get($theme, primary);
   $warn: map-get($theme, warn);
 
-  mat-chip-option[color='accent'] {
-    background-color: mat.get-color-from-palette($accent, 900) !important;
-  }
+  mat-chip-option {
+    .mat-mdc-chip-action-label {
+      color: mat.get-contrast-color-from-palette($primary, 900) !important;
+    }
 
-  mat-chip-option:not([color='accent']) {
-    background-color: mat.get-color-from-palette($primary, 900) !important;
+    &[color='accent'] {
+      background-color: mat.get-color-from-palette($accent, 900) !important;
+    }
+
+    &:not([color='accent']) {
+      background-color: mat.get-color-from-palette($primary, 900) !important;
+    }
   }
 
   .custom-select {
@@ -42,13 +48,13 @@
     background-color: mat.get-color-from-palette($accent, 900) !important;
     color: mat.get-color-from-palette($primary, 900) !important;
     button.mat-mdc-button.active {
-      color: mat.get-color-from-palette($accent, 100) !important;
+      color: mat.get-contrast-color-from-palette($primary, 900) !important;
     }
   }
 
   app-root {
     background-color: mat.get-color-from-palette($primary, 900) !important;
-    color: mat.get-color-from-palette($accent, 50) !important;
+    color: mat.get-contrast-color-from-palette($primary, 900) !important;
   }
 }
 
