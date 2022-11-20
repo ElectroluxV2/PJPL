@@ -21,8 +21,7 @@
           </section>
           <ul class="info">
             <li *ngFor="let info of subject.additionalData | keyvalue">
-              <span class="key">{{ info.key }}</span>
-              :
+              <span class="key">{{ info.key }}: </span>
               <span class="value">{{ info.value }}</span>
             </li>
           </ul>
