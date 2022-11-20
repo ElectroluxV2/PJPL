@@ -26,7 +26,7 @@ jobs:
           pnpm ng build
           
       - name: test
-        run: ls -l
+        run: ls -l dist
 
       - name: 📂 Sync files
         uses: sand4rt/ftp-deployer@v1.4
@@ -37,7 +37,7 @@ jobs:
           username: ${{ secrets.username }}
           password: ${{ secrets.password }}
           remote_folder: /home/ubuntu/PJPL/PWA
-          local_folder: ./dist/frontend/
+          local_folder: dist/frontend
           cleanup: true
           
       - name: 🚚 Replace PWA files in apache
