@@ -3,37 +3,37 @@
   appScrollToCurrent
   [disableScrollToCurrent]="disableScrollToCurrent"
 >
-  <ng-container *ngFor="let day of days | async">
+  <ng-container *ngIf="day$ | async as day">
     <ng-container *ngIf="!day.subjects">
       <li class="no-data">
         No data for {{ day.timestamp | date: 'MMM d, y': '': 'pl-PL' }}
       </li>
     </ng-container>
     <ng-container *ngFor="let subject of day.subjects">
-        <li class="subject" [attr.current]="subject.current ? '' : null" mat-ripple>
-          <section class="header">
+      <li class="subject" [attr.current]="subject.current ? '' : null" mat-ripple>
+        <section class="header">
             <span class="time">
               {{ subject.from | date: 'HH:mm': '': 'pl-PL' }}
               -
               {{ subject.to | date: 'HH:mm': '': 'pl-PL' }}
             </span>
-            <span class="room">{{ subject.room }}</span>
-          </section>
-          <ul class="info">
-            <li *ngFor="let info of subject.additionalData | keyvalue">
-              <span class="key">{{ info.key }}: </span>
-              <span class="value">{{ info.value }}</span>
-            </li>
-            <li>
-              <span class="key">Grupy: </span>
-              <span class="value">{{ subject.groups.join(',') }}</span>
-            </li>
-            <li>
-              <span class="key">Budynek: </span>
-              <span class="value">{{ subject.location}}</span>
-            </li>
-          </ul>
-        </li>
+          <span class="room">{{ subject.room }}</span>
+        </section>
+        <ul class="info">
+          <li *ngFor="let info of subject.additionalData | keyvalue">
+            <span class="key">{{ info.key }}: </span>
+            <span class="value">{{ info.value }}</span>
+          </li>
+          <li>
+            <span class="key">Grupy: </span>
+            <span class="value">{{ subject.groups.join(',') }}</span>
+          </li>
+          <li>
+            <span class="key">Budynek: </span>
+            <span class="value">{{ subject.location}}</span>
+          </li>
+        </ul>
+      </li>
       <mat-divider></mat-divider>
     </ng-container>
   </ng-container>

@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {DataService} from "../services/data.service";
 import {ActivatedRoute, ParamMap} from "@angular/router";
 import {combineLatest} from "rxjs/internal/observable/combineLatest";
-import {BehaviorSubject} from "rxjs";
+import {map, Observable, shareReplay} from "rxjs";
 import {Subject} from "../services/api.service";
 
 interface Day {
@@ -18,17 +18,18 @@ interface Day {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodayComponent {
-  private daysSource: Day[] = [];
-  public readonly days = new BehaviorSubject<Day[]>(this.daysSource);
+  public readonly day$: Observable<Day>;
 
   public disableScrollToCurrent = false;
 
   constructor(private readonly dataService: DataService, readonly route: ActivatedRoute) {
-    combineLatest([route.paramMap, dataService.subjectsChanged$])
-      .subscribe(([paramMap]) => this.loadDay(paramMap));
+    this.day$ = combineLatest([route.paramMap, dataService.subjectsChanged$]).pipe(
+      map<[ParamMap, void], Day>(([paramMap, _]) => this.loadDay(paramMap)),
+      shareReplay(1),
+    );
   }
 
-  private loadDay(paramMap: ParamMap): void {
+  private loadDay(paramMap: ParamMap): Day {
     const now = new Date(Date.now())
     const requestedDateWithoutTime = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
@@ -47,7 +48,7 @@ export class TodayComponent {
       }
     }
 
-    this.appendDay(requestedDateWithoutTime);
+    return this.makeDay(requestedDateWithoutTime);
   }
 
   private makeDay(dateWithoutTime: Date): Day {
@@ -85,10 +86,5 @@ export class TodayComponent {
           dateWithoutTime.getMonth() === now.getMonth()
       }))
     };
-  }
-
-  private appendDay(dateWithoutTime: Date): void {
-    this.daysSource = [(this.makeDay(dateWithoutTime))];
-    this.days.next(this.daysSource);
   }
 }
