@@ -28,11 +28,12 @@ jobs:
       - name: 📂 Sync files
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
-            username: ${{ secrets.username }}
-            server: ${{ secrets.host }}
-            ssh_private_key: ${{ secrets.ssh }} 
-            local_path: './frontend/dist/frontend/*'
-            remote_path: '/home/${{ secrets.username }}/PJPL/PWA'
+          username: ${{ secrets.username }}
+          server: ${{ secrets.host }}
+          ssh_private_key: ${{ secrets.ssh }} 
+          local_path: './frontend/dist/frontend/*'
+          remote_path: '/home/${{ secrets.username }}/PJPL/PWA'
+          delete_remote_files: true
           
       - name: 🚚 Replace PWA files in apache
         uses: appleboy/ssh-action@master
