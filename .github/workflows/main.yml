@@ -25,20 +25,10 @@ jobs:
           pnpm install
           pnpm ng build
           
-      - name: test
-        run: ls -l dist
-
-      - name: 📂 Sync files
-        uses: sand4rt/ftp-deployer@v1.4
-        with:
-          sftp: true
-          host: ${{ secrets.host }}
-          port: 22
-          username: ${{ secrets.username }}
-          password: ${{ secrets.password }}
-          remote_folder: /home/ubuntu/PJPL/PWA
-          local_folder: ${{ env.GITHUB_WORKSPACE }}/frontend/dist/frontend/
-          cleanup: true
+      - name: 📂 RSync files
+        run: |
+          export RSYNC_PASSWORD=${{ secrets.password }} ;
+          rsync -r --delete ./dist/frontend ${{ secrets.username }}@${{ secrets.host }}:/home/${{ secrets.username }}/PJPL/PWA
           
       - name: 🚚 Replace PWA files in apache
         uses: appleboy/ssh-action@master
