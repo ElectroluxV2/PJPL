@@ -1,0 +1,53 @@
+on: push
+name: 🚀 Deploy PWA on push
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Setup pnpm
+        run: |
+          npm -g pnpm
+
+      - name: 🔨 Build Project
+        run: |
+          pnpm install
+          pnpm ng build
+
+      - name: 📂 Sync files
+        uses: sand4rt/ftp-deployer@v1.5
+        with:
+          sftp: true
+          host: ${{ secrets.host }}
+          port: 22
+          username: ${{ secrets.username }}
+          password: ${{ secrets.password }}
+          remote_folder: /home/ubuntu/PJPL/PWA
+          local_folder: ./dist/frontend/
+          cleanup: true
+          
+      - name: 🚚 Replace PWA files in apache
+        uses: appleboy/ssh-action@0.1.5
+        with:
+          host: ${{ secrets.host }}
+          username: ${{ secrets.username }}
+          password: ${{ secrets.password }}
+          port: 22
+          script: |
+           cd /var/www/html ;
+           rm *.js ;
+           rm *.html ;
+           rm *.css ;
+           rm -r assets ;
+           cp -r /home/ubuntu/PJPL/PWA/* . 
