@@ -37,7 +37,7 @@ jobs:
           username: ${{ secrets.username }}
           password: ${{ secrets.password }}
           remote_folder: /home/ubuntu/PJPL/PWA
-          local_folder: dist/frontend
+          local_folder: $GITHUB_WORKSPACE/frontend/dist/frontend/
           cleanup: true
           
       - name: 🚚 Replace PWA files in apache
