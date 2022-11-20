@@ -18,7 +18,7 @@ jobs:
 
       - name: Setup pnpm
         run: |
-          npm -g pnpm
+          npm i -g pnpm
 
       - name: 🔨 Build Project
         run: |
