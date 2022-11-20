@@ -38,7 +38,7 @@ jobs:
           cleanup: true
           
       - name: 🚚 Replace PWA files in apache
-        uses: appleboy/ssh-action@0.1.5
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.host }}
           username: ${{ secrets.username }}
