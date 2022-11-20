@@ -24,6 +24,9 @@ jobs:
         run: |
           pnpm install
           pnpm ng build
+          
+      - name: test
+        run: ls -l
 
       - name: 📂 Sync files
         uses: sand4rt/ftp-deployer@v1.4
