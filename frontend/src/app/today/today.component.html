@@ -17,7 +17,7 @@
               -
               {{ subject.to | date: 'HH:mm': '': 'pl-PL' }}
             </span>
-          <span class="room">{{ subject.room }}</span>
+          <span class="room"> {{ subject.room }}</span>
         </section>
         <ul class="info">
           <li *ngFor="let info of subject.additionalData | keyvalue">
