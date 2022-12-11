@@ -11,7 +11,7 @@
 @use 'src/styles/primary-light' as primary-light;
 @use 'src/styles/primary-dark' as primary-dark;
 @use 'src/styles/accent-pjpl' as accent-pjpl;
-@use 'src/styles/warn' as warn-pjpl;
+@use 'src/styles/light-warn' as warn-pjpl;
 
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
@@ -32,8 +32,8 @@ $frontend-light-warn: mat.define-palette(warn-pjpl.$palette);
 $frontend-light-theme: mat.define-light-theme((
   color: (
     primary: $frontend-light-primary,
-    accent: map-merge($frontend-accent,(50:red)) ,
-    warn: $frontend-light-warn,
+    accent: map-merge($frontend-accent,(50:red,200:#ea0a0d)) ,
+    warn: map-merge($frontend-dark-warn,$frontend-light-warn),
   )
 ));
 
