@@ -11,6 +11,7 @@
 @use 'src/styles/primary-light' as primary-light;
 @use 'src/styles/primary-dark' as primary-dark;
 @use 'src/styles/accent-pjpl' as accent-pjpl;
+@use 'src/styles/warn' as warn-pjpl;
 
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
@@ -24,6 +25,7 @@ $frontend-light-primary: mat.define-palette(primary-light.$palette);
 $frontend-dark-primary: mat.define-palette(primary-dark.$palette);
 $frontend-accent: mat.define-palette(accent-pjpl.$palette);
 $frontend-warn: mat.define-palette(mat.$orange-palette);
+$frontend-WarnBest: mat.define-palette(warn-pjpl.$palette);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
@@ -32,36 +34,7 @@ $frontend-light-theme: mat.define-light-theme((
   color: (
     primary: $frontend-light-primary,
     accent: map-merge($frontend-accent,(50:red)) , // 50 change
-    warn: mat.define-palette((  50: #fff8e1,
-      100: #ffecb3,
-      200: #ffe082,
-      300: #8bc34a,
-      400: #ffca28,
-      500: #ffc107,
-      600: #ffb300,
-      700: #ffa000,
-      800: #ff8f00,
-      900: #8bc34a,
-      A100: #ffe57f,
-      A200: #ffd740,
-      A400: #ffc400,
-      A700: #ffab00,
-      contrast: (
-        50: $dark-primary-text,
-        100: $dark-primary-text,
-        200: $dark-primary-text,
-        300: $dark-primary-text,
-        400: $dark-primary-text,
-        500: $dark-primary-text,
-        600: $dark-primary-text,
-        700: $dark-primary-text,
-        800: $dark-primary-text,
-        900: $dark-primary-text,
-        A100: $dark-primary-text,
-        A200: $dark-primary-text,
-        A400: $dark-primary-text,
-        A700: $dark-primary-text,
-      ))),
+    warn: $frontend-WarnBest,
   )
 ));
 
