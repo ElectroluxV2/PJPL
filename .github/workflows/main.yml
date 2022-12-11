@@ -5,6 +5,7 @@ name: 🚀 Deploy PWA on push
 jobs:
   web-deploy:
     name: 🎉 Deploy
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     defaults:
       run:
