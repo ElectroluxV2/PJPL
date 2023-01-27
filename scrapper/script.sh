@@ -1,22 +1,19 @@
 #!/bin/bash
-# Check is Lock File exists, if not create it and set trap on exit
- if { set -C; 2>/dev/null >~/manlocktest.lock; }; then
-         trap "rm -f ~/manlocktest.lock" EXIT
- else
-         echo "Lock file exists… exiting"
-         exit
- fi
+clear
 
-NOWYEAR=$(date +%Y);
-NOWMONTHDAY=$(date +%m%d);
-SUMMERBREAK=0215;
-SPRINGBREAK=0820;
+current_month=$(date +%m);
+current_year=$(date +%Y);
+first_month_of_summer_semester=3;
+last_month_of_summer_semester=8;
 
-if [[ 10#$NOWMONTHDAY -lt 10#$SUMMERBREAK ]] || [[ 10#$NOWMONTHDAY -gt 10#$SPRINGBREAK ]];
+if [ "$current_month" -gt $first_month_of_summer_semester ] && [ "$current_month" -lt $last_month_of_summer_semester ]
 then
-	RESULT="$NOWYEAR/$((NOWYEAR+1)) zimowy";
+   current_semester="$((current_year - 1))/$current_year letni"
+elif [ "$current_month" -lt $first_month_of_summer_semester ]
+then
+   current_semester="$((current_year - 1))/$current_year zimowy"
 else
-	RESULT="$((NOWYEAR-1))/$NOWYEAR letni";
+  current_semester="$current_year/$((current_year + 1)) zimowy"
 fi
 
-java -jar scrapper-*.jar -st "stacjonarne Gdańsk" -se "$RESULT"
+java -jar scrapper-*.jar -st "Informatyka,Gdańsk" -se "$current_semester"
