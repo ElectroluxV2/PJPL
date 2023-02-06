@@ -11,10 +11,14 @@
     }
 
     &[color='accent'] {
+
+      .mat-mdc-chip-action-label {color: mat.get-contrast-color-from-palette($primary, 600) !important;}
+
       background-color: mat.get-color-from-palette($accent, 900) !important;
     }
 
     &:not([color='accent']) {
+      color: mat.get-contrast-color-from-palette($primary, 600) !important;
       background-color: mat.get-color-from-palette($primary, 900) !important;
     }
   }
