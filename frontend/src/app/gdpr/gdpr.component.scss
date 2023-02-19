@@ -1,0 +1,5 @@
+::ng-deep {
+  app-root:has(app-gdpr) {
+    height: auto !important;
+  }
+}

@@ -24,6 +24,7 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
 import {MatCardModule} from "@angular/material/card";
 import {MatChipsModule} from "@angular/material/chips";
+import { GdprComponent } from './gdpr/gdpr.component';
 registerLocaleData(localePl);
 
 @NgModule({
@@ -34,7 +35,8 @@ registerLocaleData(localePl);
     SettingsComponent,
     NotFoundComponent,
     ScrollToCurrentDirective,
-    GroupChooserComponent
+    GroupChooserComponent,
+    GdprComponent
   ],
   imports: [
     BrowserModule,

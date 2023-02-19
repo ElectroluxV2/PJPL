@@ -4,8 +4,12 @@ import {CalendarComponent} from "./calendar/calendar.component";
 import {TodayComponent} from "./today/today.component";
 import {NotFoundComponent} from "./not-found/not-found.component";
 import {SettingsComponent} from "./settings/settings.component";
+import { GdprComponent } from "./gdpr/gdpr.component";
 
 const routes: Routes = [{
+  path: 'gdpr',
+  component: GdprComponent,
+}, {
   path: 'calendar',
   component: CalendarComponent
 }, {
