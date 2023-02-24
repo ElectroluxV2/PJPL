@@ -27,7 +27,7 @@ public class GroupSelector {
                 .findElement(groupsListBoxBy)
                 .findElements(By.tagName("li"))
                 .stream()
-                .map(li -> li.getText().trim())
+                .map(li -> li.getAttribute("innerText").trim())
                 .filter(name -> !name.isEmpty())
                 .toList();
     }
@@ -39,7 +39,7 @@ public class GroupSelector {
                 .findElement(groupsListBoxBy)
                 .findElements(By.tagName("li"))
                 .stream()
-                .filter(item -> item.getText().trim().equalsIgnoreCase(groupToChoose))
+                .filter(item -> item.getAttribute("innerText").trim().equalsIgnoreCase(groupToChoose))
                 .findFirst()
                 .orElseThrow()
                 .click();

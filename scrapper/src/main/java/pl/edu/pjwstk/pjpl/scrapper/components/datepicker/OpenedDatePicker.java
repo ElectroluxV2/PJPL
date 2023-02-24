@@ -33,7 +33,7 @@ public class OpenedDatePicker {
                 .findElement(dayTableBy)
                 .findElements(By.tagName("td"))
                 .stream()
-                .filter(td -> !td.getText().trim().isEmpty())
+                .filter(td -> !td.getAttribute("innerText").trim().isEmpty())
                 .findFirst()
                 .orElseThrow()
                 .click();

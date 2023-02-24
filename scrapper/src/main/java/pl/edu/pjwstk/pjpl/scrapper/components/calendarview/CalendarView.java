@@ -26,7 +26,7 @@ public class CalendarView {
     public String getCurrentDate() {
         return driver.
                 findElement(currentDateBy)
-                .getText()
+                .getAttribute("innerText")
                 .trim();
     }
 
@@ -57,7 +57,7 @@ public class CalendarView {
                 .findElement(By.id(subjectId));
 
         final var subjectCode = subject
-                .getText()
+                .getAttribute("innerText")
                 .trim()
                 .split(" ")[0];
 

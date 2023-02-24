@@ -61,8 +61,8 @@ public class EventPopout {
                 .values()
                 .stream()
                 .filter(list -> Arrays.stream(knownProperties).noneMatch(property -> list.get(1).getAttribute("id").contains(property)))
-                .filter(list -> !list.get(1).getText().trim().isEmpty())
-                .collect(Collectors.toMap(list -> removeLastChars(list.get(0).getText().trim(), 1), list -> list.get(1).getText().trim()));
+                .filter(list -> !list.get(1).getAttribute("innerText").trim().isEmpty())
+                .collect(Collectors.toMap(list -> removeLastChars(list.get(0).getAttribute("innerText").trim().trim(), 1), list -> list.get(1).getAttribute("innerText").trim()));
     }
 
     public Duration getDuration() {
@@ -123,7 +123,7 @@ public class EventPopout {
     private String getTrimmedText(final By selector) {
         return getPopout()
                 .findElement(selector)
-                .getText()
+                .getAttribute("innerText")
                 .trim();
     }
 

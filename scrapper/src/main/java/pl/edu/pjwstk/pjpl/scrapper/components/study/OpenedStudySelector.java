@@ -26,7 +26,7 @@ public class OpenedStudySelector {
                 .findElement(StudySelector.studyDropDownBy)
                 .findElements(By.tagName("li"))
                 .stream()
-                .map(li -> li.getText().trim())
+                .map(li -> li.getAttribute("innerText").trim())
                 .filter(name -> !name.isEmpty())
                 .toList();
     }
@@ -63,7 +63,7 @@ public class OpenedStudySelector {
         dropdown
                 .findElements(By.tagName("li"))
                 .stream()
-                .filter(li -> li.getText().trim().equalsIgnoreCase(studyToChoose))
+                .filter(li -> li.getAttribute("innerText").trim().equalsIgnoreCase(studyToChoose))
                 .findFirst()
                 .orElseThrow()
                 .click();
