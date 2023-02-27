@@ -50,7 +50,7 @@ public class Scrapper implements Callable<Integer> {
         Integer result = 1;
         try {
             result = logic(driver, wait);
-        } catch (final Exception exception) {
+        } catch (final Throwable exception) {
             exception.printStackTrace(System.err);
         } finally {
             driver.quit();

@@ -39,7 +39,7 @@ public class GroupScrapper implements Runnable {
             try {
                 logic();
                 break;
-            } catch (final IOException exception) {
+            } catch (final Throwable exception) {
                 log("An error occurred during group `%s` parsing, trying again (%d / 10).".formatted(group, ++counter));
                 exception.printStackTrace(System.err);
             }

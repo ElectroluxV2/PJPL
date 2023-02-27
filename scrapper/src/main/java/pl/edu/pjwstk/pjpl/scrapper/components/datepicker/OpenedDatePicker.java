@@ -6,8 +6,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pl.edu.pjwstk.pjpl.scrapper.components.calendarview.CalendarView;
 
-import java.time.Duration;
-
 public class OpenedDatePicker {
     private static final By titleBy = By.id("ctl00_ContentPlaceHolder1_PlanZajecRadScheduler_SelectedDateCalendar_Title");
     private static final By monthViewBy = By.id("ctl00_ContentPlaceHolder1_PlanZajecRadScheduler_SelectedDateCalendar_FastNavPopup");
@@ -38,9 +36,10 @@ public class OpenedDatePicker {
                 .orElseThrow()
                 .click();
 
-        wait
-                .withTimeout(Duration.ofSeconds(90)) // Sometimes this site lags as hell
-                .until(ExpectedConditions.invisibilityOf(driver.findElement(DatePicker.datepickerBy)));
+// I do not know why it stopped working, leaving it as it is for now
+//        wait
+//                .withTimeout(Duration.ofSeconds(2)) // Sometimes this site lags as hell
+//                .until(ExpectedConditions.invisibilityOf(driver.findElement(DatePicker.datepickerBy)));
 
         return new CalendarView(driver, wait);
     }
